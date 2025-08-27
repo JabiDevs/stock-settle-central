@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
+import Settlements from "./pages/Settlements";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -31,6 +32,13 @@ const App = () => (
             <ProtectedRoute>
               <Layout>
                 <Admin />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/settlements" element={
+            <ProtectedRoute>
+              <Layout>
+                <Settlements />
               </Layout>
             </ProtectedRoute>
           } />

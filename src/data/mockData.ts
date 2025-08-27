@@ -111,6 +111,60 @@ export const mockSettlements: Settlement[] = [
   }
 ]
 
+export const mockBlockedSettlements: Settlement[] = [
+  {
+    id: "LIQ-2024-005",
+    date: "2024-01-18",
+    amount: 600000.00,
+    status: "failed",
+    ticker: "BBAS3",
+    shares: 3000,
+    grossAmount: 600000.00,
+    netAmount: 0,
+    fees: [],
+    paymentDate: "2024-01-20",
+    brokerName: "XP Investimentos",
+    history: [
+      { status: "initiated", timestamp: "2024-01-18T09:00:00Z", description: "Liquidação iniciada" },
+      { status: "failed", timestamp: "2024-01-18T09:05:00Z", description: "Liquidação rejeitada - valor acima do limite (R$ 500.000)" }
+    ]
+  },
+  {
+    id: "LIQ-2024-006",
+    date: "2024-01-18",
+    amount: 75000.00,
+    status: "failed",
+    ticker: "OIBR3",
+    shares: 500,
+    grossAmount: 75000.00,
+    netAmount: 0,
+    fees: [],
+    paymentDate: "2024-01-20",
+    brokerName: "Rico Investimentos",
+    history: [
+      { status: "initiated", timestamp: "2024-01-18T11:00:00Z", description: "Liquidação iniciada" },
+      { status: "failed", timestamp: "2024-01-18T11:01:00Z", description: "Liquidação rejeitada - ticker na lista de proibidos" }
+    ]
+  },
+  {
+    id: "LIQ-2024-007",
+    date: "2024-01-19",
+    amount: 800000.00,
+    status: "failed",
+    ticker: "WEGE3",
+    shares: 4000,
+    grossAmount: 800000.00,
+    netAmount: 0,
+    fees: [],
+    paymentDate: "2024-01-21",
+    brokerName: "BTG Pactual",
+    history: [
+      { status: "initiated", timestamp: "2024-01-19T14:00:00Z", description: "Liquidação iniciada" },
+      { status: "failed", timestamp: "2024-01-19T14:05:00Z", description: "Liquidação rejeitada - valor acima do limite (R$ 500.000)" }
+    ]
+  }
+]
+
 export const mockAdminSettings: AdminSettings = {
   maxSettlementAmount: 500000.00,
   prohibitedTickers: ["OIBR3", "OIBR4", "IRBR3"],

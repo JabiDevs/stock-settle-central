@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import Settlements from "./Settlements"
+import Dashboard from "./Dashboard"
 
 const Index = () => {
   const navigate = useNavigate()
@@ -13,7 +13,7 @@ const Index = () => {
     }
   }, [navigate])
 
-  return <Settlements />
+  return <Dashboard />
 };
 
 export default Index;

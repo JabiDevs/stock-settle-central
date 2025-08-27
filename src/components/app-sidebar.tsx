@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/sidebar"
 
 const items = [
-  { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "Liquidações", url: "/", icon: BarChart3 },
+  { title: "Dashboard", url: "/", icon: Home },
+  { title: "Liquidações", url: "/settlements", icon: BarChart3 },
   { title: "Administração", url: "/admin", icon: Settings },
 ]
 
