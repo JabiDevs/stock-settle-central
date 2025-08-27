@@ -64,30 +64,77 @@
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     /* Sidebar */
-    --sidebar-background: 213 94% 8%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Core Background & Text */
+    --background: 213 94% 6%;
+    --foreground: 210 40% 98%;
+
+    /* Card System */
+    --card: 213 94% 8%;
+    --card-foreground: 210 40% 98%;
+
+    /* Popover */
+    --popover: 213 94% 8%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Primary Brand - Financial Blue */
+    --primary: 206 100% 50%;
+    --primary-foreground: 213 94% 6%;
+    --primary-hover: 206 100% 45%;
+
+    /* Secondary - Dark Blue Gray */
+    --secondary: 213 94% 10%;
+    --secondary-foreground: 210 40% 98%;
+
+    /* Muted Elements */
+    --muted: 213 94% 12%;
+    --muted-foreground: 215 16% 65%;
+
+    /* Accent - Complementary Blue */
+    --accent: 206 100% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Status Colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & Inputs */
+    --border: 213 94% 15%;
+    --input: 213 94% 15%;
+    --ring: 206 100% 50%;
+
+    /* Financial Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(213 94% 8%), hsl(213 94% 12%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 42%));
+    --gradient-card: linear-gradient(135deg, hsl(213 94% 8%), hsl(213 94% 10%));
+
+    /* Shadows */
+    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.4), 0 2px 4px -1px hsl(0 0% 0% / 0.3);
+    --shadow-elevated: 0 10px 15px -3px hsl(0 0% 0% / 0.4), 0 4px 6px -2px hsl(0 0% 0% / 0.3);
+
+    /* Sidebar */
+    --sidebar-background: 213 94% 4%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 206 100% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 213 94% 12%;
+    --sidebar-primary-foreground: 213 94% 6%;
+    --sidebar-accent: 213 94% 8%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 213 94% 15%;
+    --sidebar-border: 213 94% 12%;
     --sidebar-ring: 206 100% 50%;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
