@@ -148,34 +148,26 @@ const Settlements = () => {
         </Card>
       </div>
 
-      {/* Search and Filters */}
-      <Card className="card-financial">
-        <CardHeader>
-          <CardTitle>Filtros</CardTitle>
-          <CardDescription>
-            Busque por ID, ticker ou corretora
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar liquidações..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Settlements Table */}
       <Card className="card-financial">
         <CardHeader>
-          <CardTitle>Lista de Liquidações</CardTitle>
-          <CardDescription>
-            {filteredSettlements.length} liquidação(ões) encontrada(s)
-          </CardDescription>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <CardTitle>Lista de Liquidações</CardTitle>
+              <CardDescription>
+                {filteredSettlements.length} liquidação(ões) encontrada(s)
+              </CardDescription>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar liquidações..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-sm"
+              />
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
