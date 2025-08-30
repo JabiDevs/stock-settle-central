@@ -41,9 +41,10 @@ const Dashboard = () => {
   
   const stats = {
     total: mockSettlements.length,
-    completed: mockSettlements.filter(s => s.status === 'completed').length,
-    processing: mockSettlements.filter(s => s.status === 'processing').length,
-    failed: mockSettlements.filter(s => s.status === 'failed').length,
+    paid: mockSettlements.filter(s => s.status === 'paid').length,
+    created: mockSettlements.filter(s => s.status === 'created').length,
+    senttopay: mockSettlements.filter(s => s.status === 'senttopay').length,
+    notaccepted: mockSettlements.filter(s => s.status === 'notaccepted').length,
     totalAmount: mockSettlements.reduce((sum, s) => sum + s.netAmount, 0),
     blockedByLimit: mockBlockedSettlements.filter(s => 
       s.history.some(h => h.description.includes('limite'))
@@ -64,9 +65,10 @@ const Dashboard = () => {
 
   // Dados para gráfico de pizza por status
   const statusData = [
-    { name: 'Concluídas', value: stats.completed, color: 'hsl(var(--success))' },
-    { name: 'Em Processamento', value: stats.processing, color: 'hsl(var(--accent))' },
-    { name: 'Falhas', value: stats.failed, color: 'hsl(var(--destructive))' },
+    { name: 'Pagas', value: stats.paid, color: 'hsl(var(--success))' },
+    { name: 'Criadas', value: stats.created, color: 'hsl(var(--accent))' },
+    { name: 'Envio Pagamento', value: stats.senttopay, color: 'hsl(var(--primary))' },
+    { name: 'Não Aceitas', value: stats.notaccepted, color: 'hsl(var(--destructive))' },
     { name: 'Iniciadas', value: mockSettlements.filter(s => s.status === 'initiated').length, color: 'hsl(var(--muted))' }
   ]
 
@@ -129,34 +131,34 @@ const Dashboard = () => {
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Concluídas</CardTitle>
+            <CardTitle className="text-sm font-medium">Pagas</CardTitle>
             <div className="w-3 h-3 rounded-full bg-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">{stats.completed}</div>
+            <div className="text-2xl font-bold text-success">{stats.paid}</div>
             <p className="text-xs text-muted-foreground">finalizadas</p>
           </CardContent>
         </Card>
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Processando</CardTitle>
+            <CardTitle className="text-sm font-medium">Criadas</CardTitle>
             <div className="w-3 h-3 rounded-full bg-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-accent">{stats.processing}</div>
-            <p className="text-xs text-muted-foreground">em andamento</p>
+            <div className="text-2xl font-bold text-accent">{stats.created}</div>
+            <p className="text-xs text-muted-foreground">na clearing</p>
           </CardContent>
         </Card>
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Falhas</CardTitle>
+            <CardTitle className="text-sm font-medium">Não Aceitas</CardTitle>
             <AlertCircle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">{stats.failed}</div>
-            <p className="text-xs text-muted-foreground">com erro</p>
+            <div className="text-2xl font-bold text-destructive">{stats.notaccepted}</div>
+            <p className="text-xs text-muted-foreground">rejeitadas</p>
           </CardContent>
         </Card>
 

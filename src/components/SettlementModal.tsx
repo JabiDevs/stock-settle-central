@@ -18,13 +18,15 @@ interface SettlementModalProps {
 
 const getStatusVariant = (status: string) => {
   switch (status) {
-    case 'completed':
+    case 'paid':
       return 'default'
-    case 'processing':
+    case 'created':
+    case 'senttopay':
       return 'secondary'
-    case 'failed':
+    case 'notaccepted':
       return 'destructive'
     case 'initiated':
+    case 'senttocreate':
       return 'outline'
     default:
       return 'outline'
@@ -33,12 +35,16 @@ const getStatusVariant = (status: string) => {
 
 const getStatusLabel = (status: string) => {
   switch (status) {
-    case 'completed':
-      return 'Concluída'
-    case 'processing':
-      return 'Em Processamento'
-    case 'failed':
-      return 'Falha'
+    case 'paid':
+      return 'Paga'
+    case 'senttopay':
+      return 'Enviado p/ Pagamento'
+    case 'created':
+      return 'Criada'
+    case 'senttocreate':
+      return 'Enviado p/ Criação'
+    case 'notaccepted':
+      return 'Não Aceita'
     case 'initiated':
       return 'Iniciada'
     default:
@@ -165,9 +171,9 @@ const SettlementModal = ({ settlement, open, onClose }: SettlementModalProps) =>
               {settlement.history.map((event, index) => (
                 <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                   <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                    event.status === 'completed' ? 'bg-success' :
-                    event.status === 'processing' ? 'bg-accent' :
-                    event.status === 'failed' ? 'bg-destructive' :
+                    event.status === 'paid' ? 'bg-success' :
+                    event.status === 'created' || event.status === 'senttopay' ? 'bg-accent' :
+                    event.status === 'notaccepted' ? 'bg-destructive' :
                     'bg-muted-foreground'
                   }`} />
                   <div className="flex-1 min-w-0">

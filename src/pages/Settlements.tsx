@@ -18,13 +18,15 @@ import { useNavigate } from "react-router-dom"
 
 const getStatusVariant = (status: string) => {
   switch (status) {
-    case 'completed':
+    case 'paid':
       return 'default'
-    case 'processing':
+    case 'created':
+    case 'senttopay':
       return 'secondary'
-    case 'failed':
+    case 'notaccepted':
       return 'destructive'
     case 'initiated':
+    case 'senttocreate':
       return 'outline'
     default:
       return 'outline'
@@ -33,12 +35,16 @@ const getStatusVariant = (status: string) => {
 
 const getStatusLabel = (status: string) => {
   switch (status) {
-    case 'completed':
-      return 'Concluída'
-    case 'processing':
-      return 'Em Processamento'
-    case 'failed':
-      return 'Falha'
+    case 'paid':
+      return 'Paga'
+    case 'senttopay':
+      return 'Enviado p/ Pagamento'
+    case 'created':
+      return 'Criada'
+    case 'senttocreate':
+      return 'Enviado p/ Criação'
+    case 'notaccepted':
+      return 'Não Aceita'
     case 'initiated':
       return 'Iniciada'
     default:
@@ -76,9 +82,10 @@ const Settlements = () => {
 
   const stats = {
     total: mockSettlements.length,
-    completed: mockSettlements.filter(s => s.status === 'completed').length,
-    processing: mockSettlements.filter(s => s.status === 'processing').length,
-    failed: mockSettlements.filter(s => s.status === 'failed').length,
+    paid: mockSettlements.filter(s => s.status === 'paid').length,
+    created: mockSettlements.filter(s => s.status === 'created').length,
+    senttopay: mockSettlements.filter(s => s.status === 'senttopay').length,
+    notaccepted: mockSettlements.filter(s => s.status === 'notaccepted').length,
     totalAmount: mockSettlements.reduce((sum, s) => sum + s.netAmount, 0)
   }
 
