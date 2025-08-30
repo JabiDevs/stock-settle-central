@@ -11,9 +11,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Search, Eye, TrendingUp, DollarSign, Calendar, AlertCircle } from "lucide-react"
+import { Search, Eye, TrendingUp, DollarSign, Calendar, AlertCircle, Plus } from "lucide-react"
 import { mockSettlements, Settlement } from "@/data/mockData"
 import SettlementModal from "@/components/SettlementModal"
+import { useNavigate } from "react-router-dom"
 
 const getStatusVariant = (status: string) => {
   switch (status) {
@@ -59,6 +60,7 @@ const formatDate = (dateString: string) => {
 const Settlements = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSettlement, setSelectedSettlement] = useState<Settlement | null>(null)
+  const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const filteredSettlements = mockSettlements.filter(settlement =>
@@ -83,11 +85,20 @@ const Settlements = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Liquidações de Ações</h1>
-        <p className="text-muted-foreground">
-          Acompanhe o status e detalhes de todas as liquidações
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Liquidações de Ações</h1>
+          <p className="text-muted-foreground">
+            Acompanhe o status e detalhes de todas as liquidações
+          </p>
+        </div>
+        <Button 
+          onClick={() => navigate('/settlements/create')}
+          className="flex items-center gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Nova Liquidação
+        </Button>
       </div>
 
 

@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import Settlements from "./pages/Settlements";
+import CreateSettlement from "./pages/CreateSettlement";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -39,6 +40,13 @@ const App = () => (
             <ProtectedRoute>
               <Layout>
                 <Settlements />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/settlements/create" element={
+            <ProtectedRoute>
+              <Layout>
+                <CreateSettlement />
               </Layout>
             </ProtectedRoute>
           } />

@@ -22,6 +22,8 @@ const Admin = () => {
   const [newFeeName, setNewFeeName] = useState("")
   const [newFeeAmount, setNewFeeAmount] = useState("")
   const [maxAmount, setMaxAmount] = useState(settings.maxSettlementAmount.toString())
+  const [settlementAccount, setSettlementAccount] = useState(settings.settlementAccount)
+  const [advancedVolume, setAdvancedVolume] = useState(settings.advancedVolume.toString())
   const { toast } = useToast()
 
   const formatCurrency = (amount: number) => {
@@ -105,6 +107,33 @@ const Admin = () => {
     }
   }
 
+  const handleUpdateAccount = () => {
+    if (settlementAccount.trim()) {
+      setSettings(prev => ({
+        ...prev,
+        settlementAccount: settlementAccount.trim()
+      }))
+      toast({
+        title: "Conta atualizada",
+        description: `Nova conta: ${settlementAccount}`,
+      })
+    }
+  }
+
+  const handleUpdateAdvancedVolume = () => {
+    const amount = parseFloat(advancedVolume)
+    if (!isNaN(amount) && amount >= 0) {
+      setSettings(prev => ({
+        ...prev,
+        advancedVolume: amount
+      }))
+      toast({
+        title: "Volume adiantado atualizado",
+        description: `Novo volume: ${formatCurrency(amount)}`,
+      })
+    }
+  }
+
   const totalFees = settings.customFees.reduce((sum, fee) => sum + fee.amount, 0)
 
   return (
@@ -117,7 +146,7 @@ const Admin = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Maximum Settlement Amount */}
         <Card className="card-financial">
           <CardHeader>
@@ -150,35 +179,70 @@ const Admin = () => {
           </CardContent>
         </Card>
 
+        {/* Settlement Account */}
+        <Card className="card-financial">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5 text-primary" />
+              Conta de Liquidação
+            </CardTitle>
+            <CardDescription>
+              Configure a conta utilizada para liquidações
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="settlementAccount">Número da Conta</Label>
+              <Input
+                id="settlementAccount"
+                placeholder="001-12345-6"
+                value={settlementAccount}
+                onChange={(e) => setSettlementAccount(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+              <span className="text-sm font-medium">Conta Atual:</span>
+              <span className="font-bold text-lg">{settings.settlementAccount}</span>
+            </div>
+            <Button onClick={handleUpdateAccount} className="w-full">
+              Atualizar Conta
+            </Button>
+          </CardContent>
+        </Card>
+
         {/* Fee Preview */}
         <Card className="card-financial">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calculator className="h-5 w-5 text-primary" />
-              Pré-visualização de Taxas
+              Volume Adiantado
             </CardTitle>
             <CardDescription>
-              Visualização dinâmica do total de taxas configuradas
+              Configure o volume financeiro já adiantado
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              {settings.customFees.map((fee) => (
-                <div key={fee.id} className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">{fee.name}</span>
-                  <span className="font-medium">{formatCurrency(fee.amount)}</span>
-                </div>
-              ))}
+              <Label htmlFor="advancedVolume">Volume Adiantado (R$)</Label>
+              <Input
+                id="advancedVolume"
+                type="number"
+                step="0.01"
+                placeholder="600000.00"
+                value={advancedVolume}
+                onChange={(e) => setAdvancedVolume(e.target.value)}
+              />
             </div>
-            <div className="border-t pt-2">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold">Total de Taxas:</span>
-                <span className="font-bold text-xl text-primary">{formatCurrency(totalFees)}</span>
-              </div>
+            <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+              <span className="text-sm font-medium">Volume Atual:</span>
+              <span className="font-bold text-lg">{formatCurrency(settings.advancedVolume)}</span>
             </div>
+            <Button onClick={handleUpdateAdvancedVolume} className="w-full">
+              Atualizar Volume
+            </Button>
             <div className="p-3 bg-accent/10 rounded-lg">
               <p className="text-sm text-muted-foreground">
-                Este total será aplicado automaticamente em novas liquidações
+                Volume total de recursos já adiantados para liquidações
               </p>
             </div>
           </CardContent>

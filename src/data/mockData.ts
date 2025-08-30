@@ -21,6 +21,8 @@ export interface AdminSettings {
   maxSettlementAmount: number
   prohibitedTickers: string[]
   customFees: Array<{ id: string; name: string; amount: number }>
+  settlementAccount: string
+  advancedVolume: number
 }
 
 export const mockSettlements: Settlement[] = [
@@ -172,5 +174,7 @@ export const mockAdminSettings: AdminSettings = {
     { id: "1", name: "Taxa de Corretagem", amount: 350.00 },
     { id: "2", name: "Taxa de Liquidação", amount: 125.00 },
     { id: "3", name: "Emolumentos", amount: 150.00 }
-  ]
+  ],
+  settlementAccount: "001-12345-6",
+  advancedVolume: 600000.00
 }
