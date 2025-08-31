@@ -50,7 +50,7 @@ const Login = () => {
             <BarChart3 className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold">Stock Settle Central</CardTitle>
+            <CardTitle className="text-2xl font-bold">Quick</CardTitle>
             <CardDescription>
               Sistema de acompanhamento de liquidações
             </CardDescription>
