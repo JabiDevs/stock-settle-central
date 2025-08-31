@@ -18,15 +18,15 @@ interface SettlementModalProps {
 
 const getStatusVariant = (status: string) => {
   switch (status) {
-    case 'paid':
+    case 'Paid':
       return 'default'
-    case 'created':
-    case 'senttopay':
+    case 'Created':
+    case 'SentToPay':
       return 'secondary'
-    case 'notaccepted':
+    case 'NotAccepted':
       return 'destructive'
-    case 'initiated':
-    case 'senttocreate':
+    case 'Initiated':
+    case 'SentToCreate':
       return 'outline'
     default:
       return 'outline'
@@ -35,17 +35,17 @@ const getStatusVariant = (status: string) => {
 
 const getStatusLabel = (status: string) => {
   switch (status) {
-    case 'paid':
+    case 'Paid':
       return 'Paga'
-    case 'senttopay':
+    case 'SentToPay':
       return 'Enviado p/ Pagamento'
-    case 'created':
+    case 'Created':
       return 'Criada'
-    case 'senttocreate':
+    case 'SentToCreate':
       return 'Enviado p/ Criação'
-    case 'notaccepted':
+    case 'NotAccepted':
       return 'Não Aceita'
-    case 'initiated':
+    case 'Initiated':
       return 'Iniciada'
     default:
       return status
@@ -171,9 +171,9 @@ const SettlementModal = ({ settlement, open, onClose }: SettlementModalProps) =>
               {settlement.history.map((event, index) => (
                 <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                   <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                    event.status === 'paid' ? 'bg-success' :
-                    event.status === 'created' || event.status === 'senttopay' ? 'bg-accent' :
-                    event.status === 'notaccepted' ? 'bg-destructive' :
+                    event.status === 'Paid' ? 'bg-success' :
+                    event.status === 'Created' || event.status === 'SentToPay' ? 'bg-accent' :
+                    event.status === 'NotAccepted' ? 'bg-destructive' :
                     'bg-muted-foreground'
                   }`} />
                   <div className="flex-1 min-w-0">

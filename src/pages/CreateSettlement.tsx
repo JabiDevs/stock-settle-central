@@ -76,7 +76,7 @@ const CreateSettlement = () => {
         id: `LIQ-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`,
         date: new Date().toISOString().split('T')[0],
         amount: form.grossAmount,
-        status: 'initiated',
+        status: 'Initiated',
         ticker: form.ticker.toUpperCase(),
         shares: form.shares,
         grossAmount: form.grossAmount,
@@ -85,7 +85,7 @@ const CreateSettlement = () => {
         paymentDate: form.paymentDate.toISOString().split('T')[0],
         brokerName: form.brokerName,
         history: [{
-          status: 'initiated',
+          status: 'Initiated',
           timestamp: new Date().toISOString(),
           description: 'Liquidação criada manualmente'
         }]

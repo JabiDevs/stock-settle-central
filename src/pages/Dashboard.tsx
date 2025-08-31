@@ -41,10 +41,10 @@ const Dashboard = () => {
   
   const stats = {
     total: mockSettlements.length,
-    paid: mockSettlements.filter(s => s.status === 'paid').length,
-    created: mockSettlements.filter(s => s.status === 'created').length,
-    senttopay: mockSettlements.filter(s => s.status === 'senttopay').length,
-    notaccepted: mockSettlements.filter(s => s.status === 'notaccepted').length,
+    paid: mockSettlements.filter(s => s.status === 'Paid').length,
+    created: mockSettlements.filter(s => s.status === 'Created').length,
+    senttopay: mockSettlements.filter(s => s.status === 'SentToPay').length,
+    notaccepted: mockSettlements.filter(s => s.status === 'NotAccepted').length,
     totalAmount: mockSettlements.reduce((sum, s) => sum + s.netAmount, 0),
     blockedByLimit: mockBlockedSettlements.filter(s => 
       s.history.some(h => h.description.includes('limite'))
@@ -69,7 +69,7 @@ const Dashboard = () => {
     { name: 'Criadas', value: stats.created, color: 'hsl(var(--accent))' },
     { name: 'Envio Pagamento', value: stats.senttopay, color: 'hsl(var(--primary))' },
     { name: 'Não Aceitas', value: stats.notaccepted, color: 'hsl(var(--destructive))' },
-    { name: 'Iniciadas', value: mockSettlements.filter(s => s.status === 'initiated').length, color: 'hsl(var(--muted))' }
+    { name: 'Iniciadas', value: mockSettlements.filter(s => s.status === 'Initiated').length, color: 'hsl(var(--muted))' }
   ]
 
   // Dados para gráfico de bloqueios
@@ -292,61 +292,24 @@ const Dashboard = () => {
         <Card className="card-financial lg:col-span-2">
           <CardHeader>
             <CardTitle>Análise de Liquidações Bloqueadas</CardTitle>
-            <CardDescription>
-              Liquidações rejeitadas por limite financeiro ou ticker proibido
-            </CardDescription>
+            <CardDescription>Liquidações que foram rejeitadas pelo sistema</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="text-sm font-medium mb-4">Por Tipo de Bloqueio</h4>
-                <ChartContainer config={chartConfig} className="h-[200px]">
-                  <BarChart data={blockedData} layout="horizontal">
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" />
-                    <YAxis dataKey="type" type="category" width={100} fontSize={12} />
-                    <ChartTooltip 
-                      content={<ChartTooltipContent 
-                        formatter={(value: any, name: any) => [
-                          name === 'quantidade' ? `${value} liquidações` : formatCurrency(value),
-                          name === 'quantidade' ? 'Quantidade' : 'Valor Total'
-                        ]}
-                      />}
-                    />
-                    <Bar dataKey="quantidade" fill="var(--color-quantidade)" />
-                  </BarChart>
-                </ChartContainer>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium mb-4">Liquidações Bloqueadas</h4>
-                <div className="space-y-3">
-                  {mockBlockedSettlements.map((settlement) => (
-                    <div 
-                      key={settlement.id}
-                      className="p-3 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
-                      onClick={() => handleViewDetails(settlement)}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono text-sm font-medium">{settlement.id}</span>
-                            <Badge variant="destructive" className="text-xs">
-                              {settlement.ticker}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {settlement.history[settlement.history.length - 1]?.description}
-                          </p>
-                        </div>
-                        <span className="font-mono text-sm font-bold">
-                          {formatCurrency(settlement.grossAmount)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {mockBlockedSettlements.map((settlement) => (
+                <div key={settlement.id} className="p-3 border rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="font-mono text-sm font-medium">{settlement.id}</span>
+                    <Badge variant="destructive">Não Aceita</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {settlement.ticker} - {formatCurrency(settlement.amount)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {settlement.history[settlement.history.length - 1]?.description}
+                  </p>
                 </div>
-              </div>
+              ))}
             </div>
           </CardContent>
         </Card>
