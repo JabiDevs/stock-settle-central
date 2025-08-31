@@ -47,7 +47,7 @@ export function AppSidebar() {
           <BarChart3 className="h-6 w-6 text-sidebar-primary" />
           {!collapsed && (
             <div>
-              <h2 className="text-lg font-semibold text-sidebar-foreground">Stock Settle</h2>
+              <h2 className="text-lg font-semibold text-sidebar-foreground">Quick</h2>
               <p className="text-xs text-sidebar-foreground/70">Central de Liquidações</p>
             </div>
           )}
