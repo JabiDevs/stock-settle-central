@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import Settlements from "./pages/Settlements";
 import CreateSettlement from "./pages/CreateSettlement";
+import Financial from "./pages/Financial";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -47,6 +48,13 @@ const App = () => (
             <ProtectedRoute>
               <Layout>
                 <CreateSettlement />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/financial" element={
+            <ProtectedRoute>
+              <Layout>
+                <Financial />
               </Layout>
             </ProtectedRoute>
           } />

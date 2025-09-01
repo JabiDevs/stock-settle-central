@@ -1,4 +1,4 @@
-import { BarChart3, Settings, Home, LogOut } from "lucide-react"
+import { BarChart3, Settings, Home, LogOut, Calculator } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
 import {
@@ -18,6 +18,7 @@ import {
 const items = [
   { title: "Dashboard", url: "/", icon: Home },
   { title: "Liquidações", url: "/settlements", icon: BarChart3 },
+  { title: "Financeiro", url: "/financial", icon: Calculator },
   { title: "Administração", url: "/admin", icon: Settings },
 ]
 
