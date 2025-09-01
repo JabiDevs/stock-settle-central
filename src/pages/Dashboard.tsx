@@ -67,11 +67,12 @@ const Dashboard = () => {
 
   // Dados para gráfico de pizza por status
   const statusData = [
-    { name: 'Pagas', value: stats.paid, color: 'hsl(var(--success))' },
-    { name: 'Criadas', value: stats.created, color: 'hsl(var(--accent))' },
-    { name: 'Envio Pagamento', value: stats.senttopay, color: 'hsl(var(--primary))' },
-    { name: 'Não Aceitas', value: stats.notaccepted, color: 'hsl(var(--destructive))' },
-    { name: 'Iniciadas', value: mockSettlements.filter(s => s.status === 'Initiated').length, color: 'hsl(var(--muted))' }
+    { name: 'Pagas', value: stats.paid, color: 'hsl(var(--status-paid))' },
+    { name: 'Criadas', value: stats.created, color: 'hsl(var(--status-created))' },
+    { name: 'Enviado para Criar', value: stats.senttocreate, color: 'hsl(var(--status-senttocreate))' },
+    { name: 'Envio Pagamento', value: stats.senttopay, color: 'hsl(var(--status-senttopay))' },
+    { name: 'Não Aceitas', value: stats.notaccepted, color: 'hsl(var(--status-notaccepted))' },
+    { name: 'Iniciadas', value: stats.initiated, color: 'hsl(var(--status-initiated))' }
   ]
 
   // Dados para gráfico de bloqueios
@@ -147,18 +148,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Initiated</CardTitle>
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-initiated))' }} />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-initiated))' }}>{stats.initiated}</div>
-            <p className="text-xs text-muted-foreground">iniciadas</p>
-          </CardContent>
-        </Card>
-
-        <Card className="card-financial">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Not Accepted</CardTitle>
+            <CardTitle className="text-sm font-medium">Não Aceitas</CardTitle>
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-notaccepted))' }} />
           </CardHeader>
           <CardContent>
@@ -169,7 +159,18 @@ const Dashboard = () => {
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sent to Create</CardTitle>
+            <CardTitle className="text-sm font-medium">Iniciadas</CardTitle>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-initiated))' }} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-initiated))' }}>{stats.initiated}</div>
+            <p className="text-xs text-muted-foreground">iniciadas</p>
+          </CardContent>
+        </Card>
+
+        <Card className="card-financial">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Enviado para Criar</CardTitle>
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-senttocreate))' }} />
           </CardHeader>
           <CardContent>
@@ -180,7 +181,7 @@ const Dashboard = () => {
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Created</CardTitle>
+            <CardTitle className="text-sm font-medium">Criadas</CardTitle>
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-created))' }} />
           </CardHeader>
           <CardContent>
@@ -191,7 +192,7 @@ const Dashboard = () => {
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sent to Pay</CardTitle>
+            <CardTitle className="text-sm font-medium">Enviado para Pagar</CardTitle>
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-senttopay))' }} />
           </CardHeader>
           <CardContent>
@@ -202,7 +203,7 @@ const Dashboard = () => {
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Paid</CardTitle>
+            <CardTitle className="text-sm font-medium">Pagas</CardTitle>
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-paid))' }} />
           </CardHeader>
           <CardContent>
