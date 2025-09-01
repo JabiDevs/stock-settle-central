@@ -41,10 +41,12 @@ const Dashboard = () => {
   
   const stats = {
     total: mockSettlements.length,
-    paid: mockSettlements.filter(s => s.status === 'Paid').length,
+    initiated: mockSettlements.filter(s => s.status === 'Initiated').length,
+    notaccepted: mockSettlements.filter(s => s.status === 'NotAccepted').length,
+    senttocreate: mockSettlements.filter(s => s.status === 'SentToCreate').length,
     created: mockSettlements.filter(s => s.status === 'Created').length,
     senttopay: mockSettlements.filter(s => s.status === 'SentToPay').length,
-    notaccepted: mockSettlements.filter(s => s.status === 'NotAccepted').length,
+    paid: mockSettlements.filter(s => s.status === 'Paid').length,
     totalAmount: mockSettlements.reduce((sum, s) => sum + s.netAmount, 0),
     blockedByLimit: mockBlockedSettlements.filter(s => 
       s.history.some(h => h.description.includes('limite'))
@@ -116,82 +118,96 @@ const Dashboard = () => {
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
+      {/* Stats Cards - Primeira Linha */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-lg font-medium">Total de Liquidações</CardTitle>
+            <TrendingUp className="h-6 w-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-muted-foreground">liquidações</p>
+            <div className="text-4xl font-bold">{stats.total}</div>
+            <p className="text-sm text-muted-foreground mt-2">liquidações processadas</p>
           </CardContent>
         </Card>
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pagas</CardTitle>
-            <div className="w-3 h-3 rounded-full bg-success" />
+            <CardTitle className="text-lg font-medium">Volume Financeiro Total</CardTitle>
+            <DollarSign className="h-6 w-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">{stats.paid}</div>
-            <p className="text-xs text-muted-foreground">finalizadas</p>
+            <div className="text-4xl font-bold">{formatCurrency(stats.totalAmount)}</div>
+            <p className="text-sm text-muted-foreground mt-2">valor líquido total</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Stats Cards - Segunda Linha - Status */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <Card className="card-financial">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Initiated</CardTitle>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-initiated))' }} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-initiated))' }}>{stats.initiated}</div>
+            <p className="text-xs text-muted-foreground">iniciadas</p>
           </CardContent>
         </Card>
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Criadas</CardTitle>
-            <div className="w-3 h-3 rounded-full bg-accent" />
+            <CardTitle className="text-sm font-medium">Not Accepted</CardTitle>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-notaccepted))' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-accent">{stats.created}</div>
-            <p className="text-xs text-muted-foreground">na clearing</p>
+            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-notaccepted))' }}>{stats.notaccepted}</div>
+            <p className="text-xs text-muted-foreground">não aceitas</p>
           </CardContent>
         </Card>
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Não Aceitas</CardTitle>
-            <AlertCircle className="h-4 w-4 text-destructive" />
+            <CardTitle className="text-sm font-medium">Sent to Create</CardTitle>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-senttocreate))' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">{stats.notaccepted}</div>
-            <p className="text-xs text-muted-foreground">rejeitadas</p>
+            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-senttocreate))' }}>{stats.senttocreate}</div>
+            <p className="text-xs text-muted-foreground">envio criação</p>
           </CardContent>
         </Card>
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Valor Total</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Created</CardTitle>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-created))' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">{formatCurrency(stats.totalAmount)}</div>
-            <p className="text-xs text-muted-foreground">valor líquido</p>
+            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-created))' }}>{stats.created}</div>
+            <p className="text-xs text-muted-foreground">criadas</p>
           </CardContent>
         </Card>
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Bloq. Limite</CardTitle>
-            <XCircle className="h-4 w-4 text-destructive" />
+            <CardTitle className="text-sm font-medium">Sent to Pay</CardTitle>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-senttopay))' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">{stats.blockedByLimit}</div>
-            <p className="text-xs text-muted-foreground">acima limite</p>
+            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-senttopay))' }}>{stats.senttopay}</div>
+            <p className="text-xs text-muted-foreground">envio pagamento</p>
           </CardContent>
         </Card>
 
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Bloq. Ticker</CardTitle>
-            <ShieldX className="h-4 w-4 text-destructive" />
+            <CardTitle className="text-sm font-medium">Paid</CardTitle>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-paid))' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">{stats.blockedByTicker}</div>
-            <p className="text-xs text-muted-foreground">ticker proibido</p>
+            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-paid))' }}>{stats.paid}</div>
+            <p className="text-xs text-muted-foreground">pagas</p>
           </CardContent>
         </Card>
       </div>
