@@ -1,9 +1,12 @@
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { mockSettlements, mockAdminSettings } from "@/data/mockData"
-import { Calculator, TrendingUp, Receipt } from "lucide-react"
+import { Calculator, TrendingUp, Receipt, Filter } from "lucide-react"
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('pt-BR', {
@@ -37,31 +40,53 @@ const getStatusLabel = (status: string) => {
 }
 
 export default function Financial() {
+  const [selectedStatus, setSelectedStatus] = useState('Paid')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
   // Filtrar apenas liquidações processadas (excluir NotAccepted)
   const processedSettlements = mockSettlements.filter(s => s.status !== 'NotAccepted')
   
   // Cálculos de totais
   const totalGrossAmount = processedSettlements.reduce((sum, s) => sum + s.grossAmount, 0)
-  const totalFees = processedSettlements.reduce((sum, s) => 
+  const totalFeesReceived = processedSettlements.reduce((sum, s) => 
     sum + s.fees.reduce((feeSum, fee) => feeSum + fee.amount, 0), 0
   )
-  const totalNetAmount = processedSettlements.reduce((sum, s) => sum + s.netAmount, 0)
 
-  // Cálculo de volume financeiro = total líquido dos pagamentos realizados
+  // Volume financeiro pago = total líquido dos pagamentos realizados
   const paidSettlements = processedSettlements.filter(s => s.status === 'Paid')
-  const financialVolume = paidSettlements.reduce((sum, s) => sum + s.netAmount, 0)
+  const financialVolumePaid = paidSettlements.reduce((sum, s) => sum + s.netAmount, 0)
 
-  // Resumo das taxas por tipo
+  // Resumo das taxas por tipo (sem contagem)
   const feesSummary = processedSettlements.reduce((acc, settlement) => {
     settlement.fees.forEach(fee => {
       if (!acc[fee.name]) {
-        acc[fee.name] = { total: 0, count: 0 }
+        acc[fee.name] = 0
       }
-      acc[fee.name].total += fee.amount
-      acc[fee.name].count += 1
+      acc[fee.name] += fee.amount
     })
     return acc
-  }, {} as Record<string, { total: number; count: number }>)
+  }, {} as Record<string, number>)
+
+  // Filtrar e paginar liquidações para a tabela
+  const filteredSettlements = processedSettlements
+    .filter(s => selectedStatus === 'all' || s.status === selectedStatus)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+  const totalPages = Math.ceil(filteredSettlements.length / itemsPerPage)
+  const paginatedSettlements = filteredSettlements.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
+
+  const statusOptions = [
+    { value: 'all', label: 'Todos' },
+    { value: 'Paid', label: 'Pago' },
+    { value: 'Created', label: 'Criada' },
+    { value: 'SentToPay', label: 'Enviado para Pagar' },
+    { value: 'SentToCreate', label: 'Enviado para Criar' },
+    { value: 'Initiated', label: 'Iniciada' }
+  ]
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -74,89 +99,58 @@ export default function Financial() {
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total de Taxas Recebidas</CardTitle>
+            <Receipt className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-700">{formatCurrency(totalFeesReceived)}</div>
+            <p className="text-xs text-green-600">Receita com taxas aplicadas</p>
+          </CardContent>
+        </Card>
+
         <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Volume Bruto Total</CardTitle>
+            <CardTitle className="text-sm font-medium">Total de Volume Financeiro Pago</CardTitle>
             <TrendingUp className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-700">{formatCurrency(totalGrossAmount)}</div>
-            <p className="text-xs text-blue-600">{processedSettlements.length} liquidações processadas</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Taxas</CardTitle>
-            <Receipt className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-700">{formatCurrency(totalFees)}</div>
-            <p className="text-xs text-red-600">Descontadas do volume bruto</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Volume Líquido Total</CardTitle>
-            <Calculator className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-700">{formatCurrency(totalNetAmount)}</div>
-            <p className="text-xs text-green-600">Bruto - Taxas</p>
+            <div className="text-2xl font-bold text-blue-700">{formatCurrency(financialVolumePaid)}</div>
+            <p className="text-xs text-blue-600">{paidSettlements.length} pagamentos realizados</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Volume Financeiro Final</CardTitle>
-            <TrendingUp className="h-4 w-4 text-purple-600" />
+            <CardTitle className="text-sm font-medium">Total Bruto de Liquidações</CardTitle>
+            <Calculator className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-700">{formatCurrency(financialVolume)}</div>
-            <p className="text-xs text-purple-600">{paidSettlements.length} pagamentos realizados</p>
+            <div className="text-2xl font-bold text-purple-700">{formatCurrency(totalGrossAmount)}</div>
+            <p className="text-xs text-purple-600">{processedSettlements.length} liquidações processadas</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Fórmula de Cálculo */}
+      {/* Somatória destacada */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5" />
-            Como o Volume Financeiro é Calculado
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="pt-6">
           <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
-            <h3 className="font-semibold mb-2">Fórmula:</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Volume Financeiro = Soma dos Valores Líquidos das Liquidações com Status "Paga"
-            </p>
-            
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span>1. Volume Bruto Total:</span>
+                <span>Total Bruto de Liquidações:</span>
                 <span className="font-mono">{formatCurrency(totalGrossAmount)}</span>
               </div>
               <div className="flex justify-between">
-                <span>2. (-) Total de Taxas:</span>
-                <span className="font-mono text-red-600">- {formatCurrency(totalFees)}</span>
-              </div>
-              <Separator />
-              <div className="flex justify-between">
-                <span>3. (=) Volume Líquido Total:</span>
-                <span className="font-mono">{formatCurrency(totalNetAmount)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>4. Apenas liquidações "Pagas":</span>
-                <span className="font-mono">{paidSettlements.length} de {processedSettlements.length}</span>
+                <span>Total de Taxas Recebidas:</span>
+                <span className="font-mono text-green-600">+ {formatCurrency(totalFeesReceived)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-semibold text-lg">
-                <span>Volume Financeiro Final:</span>
-                <span className="font-mono text-green-600">{formatCurrency(financialVolume)}</span>
+                <span>Total de Volume Financeiro Pago:</span>
+                <span className="font-mono text-blue-600">{formatCurrency(financialVolumePaid)}</span>
               </div>
             </div>
           </div>
@@ -173,27 +167,19 @@ export default function Financial() {
             <TableHeader>
               <TableRow>
                 <TableHead>Tipo de Taxa</TableHead>
-                <TableHead className="text-center">Qtd. Aplicações</TableHead>
-                <TableHead className="text-center">Valor Médio</TableHead>
                 <TableHead className="text-right">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Object.entries(feesSummary).map(([feeName, data]) => (
+              {Object.entries(feesSummary).map(([feeName, amount]) => (
                 <TableRow key={feeName}>
                   <TableCell className="font-medium">{feeName}</TableCell>
-                  <TableCell className="text-center">{data.count}</TableCell>
-                  <TableCell className="text-center">{formatCurrency(data.total / data.count)}</TableCell>
-                  <TableCell className="text-right font-mono">{formatCurrency(data.total)}</TableCell>
+                  <TableCell className="text-right font-mono">{formatCurrency(amount)}</TableCell>
                 </TableRow>
               ))}
               <TableRow className="bg-muted/50">
                 <TableCell className="font-bold">Total Geral</TableCell>
-                <TableCell className="text-center font-bold">
-                  {Object.values(feesSummary).reduce((sum, data) => sum + data.count, 0)}
-                </TableCell>
-                <TableCell className="text-center">-</TableCell>
-                <TableCell className="text-right font-mono font-bold">{formatCurrency(totalFees)}</TableCell>
+                <TableCell className="text-right font-mono font-bold">{formatCurrency(totalFeesReceived)}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -202,11 +188,28 @@ export default function Financial() {
 
       {/* Detalhamento por Liquidação */}
       <Card>
-        <CardHeader>
-          <CardTitle>Detalhamento por Liquidação</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Todas as liquidações processadas e seus respectivos cálculos
-          </p>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Detalhamento por Liquidação</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Liquidações filtradas por status com paginação
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4" />
+            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filtrar por status" />
+              </SelectTrigger>
+              <SelectContent>
+                {statusOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -215,14 +218,14 @@ export default function Financial() {
                 <TableHead>ID</TableHead>
                 <TableHead>Ticker</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Valor Bruto</TableHead>
+                <TableHead className="text-right">Valor Liquidação</TableHead>
                 <TableHead className="text-right">Taxas</TableHead>
-                <TableHead className="text-right">Valor Líquido</TableHead>
+                <TableHead className="text-right">Valor Pago</TableHead>
                 <TableHead className="text-center">Contribui p/ Volume</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {processedSettlements.map((settlement) => {
+              {paginatedSettlements.map((settlement) => {
                 const totalSettlementFees = settlement.fees.reduce((sum, fee) => sum + fee.amount, 0)
                 const contributesToVolume = settlement.status === 'Paid'
                 
@@ -236,7 +239,7 @@ export default function Financial() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right font-mono">{formatCurrency(settlement.grossAmount)}</TableCell>
-                    <TableCell className="text-right font-mono text-red-600">
+                    <TableCell className="text-right font-mono text-green-600">
                       {formatCurrency(totalSettlementFees)}
                     </TableCell>
                     <TableCell className="text-right font-mono font-semibold">
@@ -254,6 +257,45 @@ export default function Financial() {
               })}
             </TableBody>
           </Table>
+          
+          {/* Paginação */}
+          {totalPages > 1 && (
+            <div className="mt-4 flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(page)}
+                        isActive={currentPage === page}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+          
+          <div className="mt-4 text-sm text-muted-foreground text-center">
+            Mostrando {paginatedSettlements.length} de {filteredSettlements.length} liquidações
+          </div>
         </CardContent>
       </Card>
     </div>
