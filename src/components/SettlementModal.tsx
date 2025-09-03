@@ -131,14 +131,16 @@ const SettlementModal = ({ settlement, open, onClose }: SettlementModalProps) =>
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <span className="font-medium text-muted-foreground">Detalhamento das Taxas</span>
-              {settlement.fees.map((fee, index) => (
-                <div key={index} className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">{fee.name}</span>
-                  <span className="text-green-600">+{formatCurrency(fee.amount)}</span>
-                </div>
-              ))}
+              <div className="space-y-2">
+                {settlement.fees.map((fee, index) => (
+                  <div key={index} className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">{fee.name}</span>
+                    <span className="text-green-600">+{formatCurrency(fee.amount)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
             
             <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
