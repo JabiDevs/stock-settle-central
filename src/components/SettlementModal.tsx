@@ -124,21 +124,10 @@ const SettlementModal = ({ settlement, open, onClose }: SettlementModalProps) =>
               Detalhes Financeiros
             </h3>
             
-            <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>Valor Financeiro Pago:</span>
-                  <span className="font-mono">{formatCurrency(settlement.netAmount)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Taxas Recebidas:</span>
-                  <span className="font-mono text-green-600">+ {formatCurrency(totalFees)}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between font-semibold text-lg">
-                  <span>Valor Total:</span>
-                  <span className="font-mono">{formatCurrency(settlement.grossAmount)}</span>
-                </div>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Valor Financeiro Pago:</span>
+                <span className="font-mono text-lg">{formatCurrency(settlement.netAmount)}</span>
               </div>
             </div>
 
@@ -150,6 +139,20 @@ const SettlementModal = ({ settlement, open, onClose }: SettlementModalProps) =>
                   <span className="text-green-600">+{formatCurrency(fee.amount)}</span>
                 </div>
               ))}
+            </div>
+            
+            <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Taxas Recebidas:</span>
+                  <span className="font-mono text-green-600">+ {formatCurrency(totalFees)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between font-semibold text-lg">
+                  <span>Valor Total:</span>
+                  <span className="font-mono">{formatCurrency(settlement.grossAmount)}</span>
+                </div>
+              </div>
             </div>
 
             <div className="flex justify-between items-center text-sm">
