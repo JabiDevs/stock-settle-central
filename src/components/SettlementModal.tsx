@@ -105,7 +105,7 @@ const SettlementModal = ({ settlement, open, onClose }: SettlementModalProps) =>
               <Building className="h-4 w-4" />
               Informações do Ativo
             </h3>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Ticker</label>
                 <p className="font-mono text-lg font-bold text-primary">{settlement.ticker}</p>
@@ -113,10 +113,6 @@ const SettlementModal = ({ settlement, open, onClose }: SettlementModalProps) =>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Quantidade</label>
                 <p className="text-lg font-semibold">{settlement.shares.toLocaleString('pt-BR')}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Corretora</label>
-                <p className="font-medium">{settlement.brokerName}</p>
               </div>
             </div>
           </div>
@@ -128,39 +124,37 @@ const SettlementModal = ({ settlement, open, onClose }: SettlementModalProps) =>
               Detalhes Financeiros
             </h3>
             
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Valor Bruto</span>
-                <span className="font-semibold text-lg">{formatCurrency(settlement.grossAmount)}</span>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-2">
-                <span className="font-medium text-muted-foreground">Taxas e Emolumentos</span>
-                {settlement.fees.map((fee, index) => (
-                  <div key={index} className="flex justify-between items-center text-sm">
-                    <span className="text-muted-foreground">{fee.name}</span>
-                    <span className="text-destructive">-{formatCurrency(fee.amount)}</span>
-                  </div>
-                ))}
-                <div className="flex justify-between items-center text-sm font-medium pt-1 border-t">
-                  <span>Total de Taxas</span>
-                  <span className="text-destructive">-{formatCurrency(totalFees)}</span>
+            <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Valor Financeiro Pago:</span>
+                  <span className="font-mono">{formatCurrency(settlement.netAmount)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Taxas Recebidas:</span>
+                  <span className="font-mono text-green-600">+ {formatCurrency(totalFees)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between font-semibold text-lg">
+                  <span>Valor Total:</span>
+                  <span className="font-mono">{formatCurrency(settlement.grossAmount)}</span>
                 </div>
               </div>
+            </div>
 
-              <Separator />
+            <div className="space-y-2">
+              <span className="font-medium text-muted-foreground">Detalhamento das Taxas</span>
+              {settlement.fees.map((fee, index) => (
+                <div key={index} className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">{fee.name}</span>
+                  <span className="text-green-600">+{formatCurrency(fee.amount)}</span>
+                </div>
+              ))}
+            </div>
 
-              <div className="flex justify-between items-center">
-                <span className="font-semibold">Valor Líquido</span>
-                <span className="font-bold text-xl text-success">{formatCurrency(settlement.netAmount)}</span>
-              </div>
-
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Data de Pagamento</span>
-                <span className="font-medium">{formatDate(settlement.paymentDate)}</span>
-              </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">Data de Pagamento</span>
+              <span className="font-medium">{formatDate(settlement.paymentDate)}</span>
             </div>
           </div>
 
