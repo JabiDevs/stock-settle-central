@@ -5,6 +5,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
   Table,
   TableBody,
   TableCell,
@@ -24,6 +32,7 @@ const Admin = () => {
   const [maxAmount, setMaxAmount] = useState(settings.maxSettlementAmount.toString())
   const [settlementAccount, setSettlementAccount] = useState(settings.settlementAccount)
   const [advancedVolume, setAdvancedVolume] = useState(settings.advancedVolume.toString())
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingFeeId, setEditingFeeId] = useState<string | null>(null)
   const [editFeeName, setEditFeeName] = useState("")
   const [editFeeAmount, setEditFeeAmount] = useState("")
@@ -102,6 +111,7 @@ const Admin = () => {
       setEditingFeeId(feeId)
       setEditFeeName(fee.name)
       setEditFeeAmount(fee.amount.toString())
+      setIsEditModalOpen(true)
     }
   }
 
@@ -117,6 +127,7 @@ const Admin = () => {
               : fee
           )
         }))
+        setIsEditModalOpen(false)
         setEditingFeeId(null)
         setEditFeeName("")
         setEditFeeAmount("")
@@ -129,6 +140,7 @@ const Admin = () => {
   }
 
   const handleCancelEdit = () => {
+    setIsEditModalOpen(false)
     setEditingFeeId(null)
     setEditFeeName("")
     setEditFeeAmount("")
@@ -378,66 +390,24 @@ const Admin = () => {
             <TableBody>
               {settings.customFees.map((fee) => (
                 <TableRow key={fee.id}>
-                  <TableCell className="font-medium">
-                    {editingFeeId === fee.id ? (
-                      <Input
-                        value={editFeeName}
-                        onChange={(e) => setEditFeeName(e.target.value)}
-                        placeholder="Nome da taxa"
-                      />
-                    ) : (
-                      fee.name
-                    )}
-                  </TableCell>
-                  <TableCell className="font-mono">
-                    {editingFeeId === fee.id ? (
-                      <Input
-                        type="number"
-                        value={editFeeAmount}
-                        onChange={(e) => setEditFeeAmount(e.target.value)}
-                        placeholder="Valor"
-                      />
-                    ) : (
-                      formatCurrency(fee.amount)
-                    )}
-                  </TableCell>
+                  <TableCell className="font-medium">{fee.name}</TableCell>
+                  <TableCell className="font-mono">{formatCurrency(fee.amount)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex gap-2 justify-end">
-                      {editingFeeId === fee.id ? (
-                        <>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleSaveEditFee}
-                          >
-                            Salvar
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleCancelEdit}
-                          >
-                            Cancelar
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditFee(fee.id)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleRemoveFee(fee.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </>
-                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditFee(fee.id)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleRemoveFee(fee.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -452,6 +422,54 @@ const Admin = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Fee Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Editar Taxa</DialogTitle>
+            <DialogDescription>
+              Faça as alterações necessárias na taxa selecionada.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="edit-fee-name" className="text-right">
+                Nome
+              </Label>
+              <Input
+                id="edit-fee-name"
+                value={editFeeName}
+                onChange={(e) => setEditFeeName(e.target.value)}
+                className="col-span-3"
+                placeholder="Nome da taxa"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="edit-fee-amount" className="text-right">
+                Valor (R$)
+              </Label>
+              <Input
+                id="edit-fee-amount"
+                type="number"
+                step="0.01"
+                value={editFeeAmount}
+                onChange={(e) => setEditFeeAmount(e.target.value)}
+                className="col-span-3"
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancelEdit}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveEditFee}>
+              Salvar Alterações
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
