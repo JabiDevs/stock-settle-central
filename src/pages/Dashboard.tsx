@@ -21,17 +21,13 @@ import {
   Cell,
   LineChart,
   Line,
+  Treemap,
 } from "recharts"
 import { TrendingUp, DollarSign, Calendar, AlertCircle, XCircle, ShieldX } from "lucide-react"
 import { mockSettlements, mockBlockedSettlements, Settlement } from "@/data/mockData"
 import SettlementModal from "@/components/SettlementModal"
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(amount)
-}
+import TreemapContent from "@/components/TreemapContent"
+import { formatCurrency } from "@/lib/utils"
 
 const Dashboard = () => {
   const [selectedSettlement, setSelectedSettlement] = useState<Settlement | null>(null)
@@ -56,13 +52,13 @@ const Dashboard = () => {
     ).length
   }
 
-  // Dados para gráfico de barras por liquidação
+  // Dados para gráfico treemap por liquidação
   const volumeBySettlement = mockSettlements.map(settlement => ({
-    id: settlement.id,
-    ticker: settlement.ticker,
-    valor: settlement.netAmount,
+    name: settlement.ticker,
+    size: settlement.netAmount,
     status: settlement.status,
-    settlement: settlement
+    settlement: settlement,
+    fill: `hsl(var(--status-${settlement.status.toLowerCase()}))`
   }))
 
   // Dados para gráfico de pizza por status
@@ -220,49 +216,24 @@ const Dashboard = () => {
           <CardHeader>
             <CardTitle>Volume Financeiro por Liquidação</CardTitle>
             <CardDescription>
-              Clique nas barras para ver detalhes da liquidação
+              Clique nas células para ver detalhes da liquidação
             </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-[300px]">
-              <BarChart data={volumeBySettlement}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="ticker" 
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis 
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`}
-                />
-                <ChartTooltip 
-                  content={<ChartTooltipContent 
-                    formatter={(value: any, name: any) => [
-                      formatCurrency(value),
-                      "Valor Líquido"
-                    ]}
-                    labelFormatter={(label: any, payload: any) => {
-                      const data = payload?.[0]?.payload
-                      return data ? `${data.ticker} (${data.id})` : label
-                    }}
-                  />}
-                />
-                <Bar 
-                  dataKey="valor" 
-                  fill="var(--color-valor)"
-                  radius={[4, 4, 0, 0]}
-                  onClick={(data: any) => {
-                    if (data?.settlement) {
-                      handleViewDetails(data.settlement)
+              <ResponsiveContainer width="100%" height="100%">
+                <Treemap
+                  data={volumeBySettlement}
+                  dataKey="size"
+                  aspectRatio={4/3}
+                  stroke="#fff"
+                  content={<TreemapContent onCellClick={(payload) => {
+                    if (payload?.settlement) {
+                      handleViewDetails(payload.settlement)
                     }
-                  }}
-                  style={{ cursor: 'pointer' }}
+                  }} />}
                 />
-              </BarChart>
+              </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
         </Card>
