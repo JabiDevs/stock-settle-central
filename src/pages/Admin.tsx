@@ -24,6 +24,9 @@ const Admin = () => {
   const [maxAmount, setMaxAmount] = useState(settings.maxSettlementAmount.toString())
   const [settlementAccount, setSettlementAccount] = useState(settings.settlementAccount)
   const [advancedVolume, setAdvancedVolume] = useState(settings.advancedVolume.toString())
+  const [editingFeeId, setEditingFeeId] = useState<string | null>(null)
+  const [editFeeName, setEditFeeName] = useState("")
+  const [editFeeAmount, setEditFeeAmount] = useState("")
   const { toast } = useToast()
 
   const formatCurrency = (amount: number) => {
@@ -93,6 +96,44 @@ const Admin = () => {
     })
   }
 
+  const handleEditFee = (feeId: string) => {
+    const fee = settings.customFees.find(f => f.id === feeId)
+    if (fee) {
+      setEditingFeeId(feeId)
+      setEditFeeName(fee.name)
+      setEditFeeAmount(fee.amount.toString())
+    }
+  }
+
+  const handleSaveEditFee = () => {
+    if (editFeeName.trim() && editFeeAmount.trim() && editingFeeId) {
+      const amount = parseFloat(editFeeAmount)
+      if (!isNaN(amount) && amount > 0) {
+        setSettings(prev => ({
+          ...prev,
+          customFees: prev.customFees.map(fee => 
+            fee.id === editingFeeId 
+              ? { ...fee, name: editFeeName.trim(), amount: amount }
+              : fee
+          )
+        }))
+        setEditingFeeId(null)
+        setEditFeeName("")
+        setEditFeeAmount("")
+        toast({
+          title: "Taxa atualizada",
+          description: `${editFeeName} foi atualizada com sucesso`,
+        })
+      }
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingFeeId(null)
+    setEditFeeName("")
+    setEditFeeAmount("")
+  }
+
   const handleUpdateMaxAmount = () => {
     const amount = parseFloat(maxAmount)
     if (!isNaN(amount) && amount > 0) {
@@ -142,7 +183,7 @@ const Admin = () => {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Administração</h1>
         <p className="text-muted-foreground">
-          Configure limites, tickers proibidos e taxas personalizadas
+          Configure limites, tickers não aceitos e taxas personalizadas
         </p>
       </div>
 
@@ -249,12 +290,12 @@ const Admin = () => {
         </Card>
       </div>
 
-      {/* Prohibited Tickers */}
+      {/* Non-Accepted Tickers */}
       <Card className="card-financial">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-primary" />
-            Tickers Proibidos
+            Tickers Não Aceitos
           </CardTitle>
           <CardDescription>
             Gerencie a lista de tickers que não podem ser liquidados
@@ -290,7 +331,7 @@ const Admin = () => {
           
           {settings.prohibitedTickers.length === 0 && (
             <p className="text-muted-foreground text-sm">
-              Nenhum ticker proibido configurado
+              Nenhum ticker não aceito configurado
             </p>
           )}
         </CardContent>
@@ -337,16 +378,67 @@ const Admin = () => {
             <TableBody>
               {settings.customFees.map((fee) => (
                 <TableRow key={fee.id}>
-                  <TableCell className="font-medium">{fee.name}</TableCell>
-                  <TableCell className="font-mono">{formatCurrency(fee.amount)}</TableCell>
+                  <TableCell className="font-medium">
+                    {editingFeeId === fee.id ? (
+                      <Input
+                        value={editFeeName}
+                        onChange={(e) => setEditFeeName(e.target.value)}
+                        placeholder="Nome da taxa"
+                      />
+                    ) : (
+                      fee.name
+                    )}
+                  </TableCell>
+                  <TableCell className="font-mono">
+                    {editingFeeId === fee.id ? (
+                      <Input
+                        type="number"
+                        value={editFeeAmount}
+                        onChange={(e) => setEditFeeAmount(e.target.value)}
+                        placeholder="Valor"
+                      />
+                    ) : (
+                      formatCurrency(fee.amount)
+                    )}
+                  </TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleRemoveFee(fee.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-2 justify-end">
+                      {editingFeeId === fee.id ? (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleSaveEditFee}
+                          >
+                            Salvar
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleCancelEdit}
+                          >
+                            Cancelar
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditFee(fee.id)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRemoveFee(fee.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
