@@ -279,7 +279,7 @@ const Dashboard = () => {
         {/* Liquidações Bloqueadas */}
         <Card className="card-financial lg:col-span-2">
           <CardHeader>
-            <CardTitle>Análise de Liquidações Bloqueadas</CardTitle>
+            <CardTitle>Análise de Liquidações Não Aceitas</CardTitle>
             <CardDescription>Liquidações que foram rejeitadas pelo sistema</CardDescription>
           </CardHeader>
           <CardContent>
@@ -290,10 +290,15 @@ const Dashboard = () => {
                     <span className="font-mono text-sm font-medium">{settlement.id}</span>
                     <Badge variant="destructive">Não Aceita</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {settlement.ticker} - {formatCurrency(settlement.amount)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <p className="text-sm text-muted-foreground">
+                      {settlement.ticker} - {formatCurrency(settlement.amount)}
+                    </p>
+                    <p className="text-sm text-muted-foreground text-right">
+                      {new Date(settlement.date).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
                     {settlement.history[settlement.history.length - 1]?.description}
                   </p>
                 </div>

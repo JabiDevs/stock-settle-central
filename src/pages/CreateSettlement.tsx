@@ -18,7 +18,6 @@ interface SettlementForm {
   ticker: string
   shares: number
   grossAmount: number
-  brokerName: string
   paymentDate: Date | undefined
   notes: string
 }
@@ -28,7 +27,6 @@ const CreateSettlement = () => {
     ticker: "",
     shares: 0,
     grossAmount: 0,
-    brokerName: "",
     paymentDate: undefined,
     notes: ""
   })
@@ -59,7 +57,7 @@ const CreateSettlement = () => {
 
     try {
       // Validações básicas
-      if (!form.ticker || !form.shares || !form.grossAmount || !form.brokerName || !form.paymentDate) {
+      if (!form.ticker || !form.shares || !form.grossAmount || !form.paymentDate) {
         toast({
           title: "Erro na validação",
           description: "Todos os campos obrigatórios devem ser preenchidos",
@@ -83,7 +81,7 @@ const CreateSettlement = () => {
         netAmount: form.grossAmount - totalFees,
         fees: fees,
         paymentDate: form.paymentDate.toISOString().split('T')[0],
-        brokerName: form.brokerName,
+        brokerName: "N/A",
         history: [{
           status: 'Initiated',
           timestamp: new Date().toISOString(),
@@ -104,7 +102,6 @@ const CreateSettlement = () => {
         ticker: "",
         shares: 0,
         grossAmount: 0,
-        brokerName: "",
         paymentDate: undefined,
         notes: ""
       })
@@ -143,9 +140,9 @@ const CreateSettlement = () => {
           Voltar
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Nova Liquidação</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Simular Liquidação</h1>
           <p className="text-muted-foreground">
-            Cadastre uma nova liquidação manualmente
+            Simule uma nova liquidação manualmente
           </p>
         </div>
       </div>
@@ -198,22 +195,6 @@ const CreateSettlement = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="brokerName">Corretora *</Label>
-                <Select value={form.brokerName} onValueChange={(value) => setForm(prev => ({ ...prev, brokerName: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a corretora" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XP Investimentos">XP Investimentos</SelectItem>
-                    <SelectItem value="BTG Pactual">BTG Pactual</SelectItem>
-                    <SelectItem value="Rico Investimentos">Rico Investimentos</SelectItem>
-                    <SelectItem value="Nubank">Nubank</SelectItem>
-                    <SelectItem value="Inter">Inter</SelectItem>
-                    <SelectItem value="Clear">Clear</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
               <div className="space-y-2">
                 <Label>Data de Pagamento *</Label>

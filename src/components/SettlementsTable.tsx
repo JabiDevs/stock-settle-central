@@ -123,7 +123,6 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
               <TableHead>ID</TableHead>
               <TableHead>Data</TableHead>
               <TableHead>Ticker</TableHead>
-              <TableHead>Corretora</TableHead>
               <TableHead>Valor</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Ações</TableHead>
@@ -145,9 +144,6 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
                   <span className="font-mono font-bold text-primary">
                     {settlement.ticker}
                   </span>
-                </TableCell>
-                <TableCell className="font-medium">
-                  {settlement.brokerName}
                 </TableCell>
                 <TableCell className="font-mono">
                   {formatCurrency(settlement.netAmount)}
