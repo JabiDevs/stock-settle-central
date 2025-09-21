@@ -52,13 +52,27 @@ const Dashboard = () => {
     ).length
   }
 
-  // Dados para gráfico treemap por liquidação
-  const volumeBySettlement = mockSettlements.map(settlement => ({
-    name: settlement.ticker,
-    size: settlement.netAmount,
-    status: settlement.status,
-    settlement: settlement,
-    fill: `hsl(var(--status-${settlement.status.toLowerCase()}))`
+  // Dados para gráfico treemap por ticker
+  const tickerVolumeMap = new Map<string, { volume: number, settlements: Settlement[] }>()
+  
+  mockSettlements.forEach(settlement => {
+    if (tickerVolumeMap.has(settlement.ticker)) {
+      const existing = tickerVolumeMap.get(settlement.ticker)!
+      existing.volume += settlement.netAmount
+      existing.settlements.push(settlement)
+    } else {
+      tickerVolumeMap.set(settlement.ticker, {
+        volume: settlement.netAmount,
+        settlements: [settlement]
+      })
+    }
+  })
+
+  const volumeByTicker = Array.from(tickerVolumeMap.entries()).map(([ticker, data]) => ({
+    name: ticker,
+    size: data.volume,
+    settlements: data.settlements,
+    fill: `hsl(var(--primary))`
   }))
 
   // Dados para gráfico de pizza por status
@@ -192,7 +206,7 @@ const Dashboard = () => {
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-senttopay))' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-senttopay))' }}>{stats.senttopay}</div>
+            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.senttopay}</div>
             <p className="text-xs text-muted-foreground">envio pagamento</p>
           </CardContent>
         </Card>
@@ -203,7 +217,7 @@ const Dashboard = () => {
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-paid))' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-paid))' }}>{stats.paid}</div>
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.paid}</div>
             <p className="text-xs text-muted-foreground">pagas</p>
           </CardContent>
         </Card>
@@ -211,26 +225,24 @@ const Dashboard = () => {
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Volume por Liquidação */}
+        {/* Volume por Ticker */}
         <Card className="card-financial">
           <CardHeader>
-            <CardTitle>Volume Financeiro por Liquidação</CardTitle>
+            <CardTitle>Volume Financeiro por Ticker</CardTitle>
             <CardDescription>
-              Clique nas células para ver detalhes da liquidação
+              Clique nas células para ver detalhes dos tickers
             </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <Treemap
-                  data={volumeBySettlement}
+                  data={volumeByTicker}
                   dataKey="size"
                   aspectRatio={4/3}
                   stroke="#fff"
                   content={<TreemapContent onCellClick={(payload) => {
-                    if (payload?.settlement) {
-                      handleViewDetails(payload.settlement)
-                    }
+                    console.log('Ticker clicked:', payload?.name, 'Volume:', payload?.size)
                   }} />}
                 />
               </ResponsiveContainer>
@@ -256,7 +268,6 @@ const Dashboard = () => {
                   labelLine={false}
                   label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                   outerRadius={80}
-                  fill="#8884d8"
                   dataKey="value"
                 >
                   {statusData.map((entry, index) => (

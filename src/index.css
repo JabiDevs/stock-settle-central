@@ -64,12 +64,12 @@
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     /* Status colors */
-    --status-initiated: 59 130 246; /* Blue */
-    --status-notaccepted: 239 68 68; /* Red */
-    --status-senttocreate: 249 115 22; /* Orange */
-    --status-created: 234 179 8; /* Yellow */
-    --status-senttopay: 147 51 234; /* Purple */
-    --status-paid: 34 197 94; /* Green */
+    --status-initiated: 217 91% 60%; /* Blue */
+    --status-notaccepted: 0 84% 60%; /* Red */
+    --status-senttocreate: 25 95% 53%; /* Orange */
+    --status-created: 48 96% 53%; /* Yellow */
+    --status-senttopay: 258 90% 66%; /* Purple */
+    --status-paid: 142 76% 36%; /* Green */
 
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
@@ -135,12 +135,12 @@
     --shadow-elevated: 0 10px 15px -3px hsl(0 0% 0% / 0.4), 0 4px 6px -2px hsl(0 0% 0% / 0.3);
 
     /* Status colors */
-    --status-initiated: 59 130 246; /* Blue */
-    --status-notaccepted: 239 68 68; /* Red */
-    --status-senttocreate: 249 115 22; /* Orange */
-    --status-created: 234 179 8; /* Yellow */
-    --status-senttopay: 147 51 234; /* Purple */
-    --status-paid: 34 197 94; /* Green */
+    --status-initiated: 217 91% 60%; /* Blue */
+    --status-notaccepted: 0 84% 60%; /* Red */
+    --status-senttocreate: 25 95% 53%; /* Orange */
+    --status-created: 48 96% 53%; /* Yellow */
+    --status-senttopay: 258 90% 66%; /* Purple */
+    --status-paid: 142 76% 36%; /* Green */
 
     /* Sidebar */
     --sidebar-background: 213 94% 4%;
