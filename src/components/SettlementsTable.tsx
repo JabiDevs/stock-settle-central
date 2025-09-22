@@ -197,36 +197,45 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
               />
             </div>
 
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Filtrar por status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os status</SelectItem>
-                <SelectItem value="Paid">Paga</SelectItem>
-                <SelectItem value="SentToPay">Enviado p/ Pagamento</SelectItem>
-                <SelectItem value="Created">Criada</SelectItem>
-                <SelectItem value="SentToCreate">Enviado p/ Criação</SelectItem>
-                <SelectItem value="Initiated">Iniciada</SelectItem>
-                <SelectItem value="NotAccepted">Não Aceita</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <div className="flex gap-2">
-              <Input
-                type="date"
-                placeholder="Data inicial"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-40"
-              />
-              <Input
-                type="date"
-                placeholder="Data final"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-40"
-              />
+            <div className="flex gap-4">
+              <div className="flex flex-col gap-1.5">
+                <p className="text-sm text-muted-foreground">Status</p>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Filtrar por status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os status</SelectItem>
+                    <SelectItem value="Paid">Paga</SelectItem>
+                    <SelectItem value="SentToPay">Enviado p/ Pagamento</SelectItem>
+                    <SelectItem value="Created">Criada</SelectItem>
+                    <SelectItem value="SentToCreate">Enviado p/ Criação</SelectItem>
+                    <SelectItem value="Initiated">Iniciada</SelectItem>
+                    <SelectItem value="NotAccepted">Não Aceita</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex flex-col gap-1.5">
+                <p className="text-sm text-muted-foreground">Data Início</p>
+                <Input
+                  type="date"
+                  placeholder="Data inicial"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-40"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <p className="text-sm text-muted-foreground">Data Fim</p>
+                <Input
+                  type="date"
+                  placeholder="Data final"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-40"
+                />
+              </div>
             </div>
           </div>
         </div>
