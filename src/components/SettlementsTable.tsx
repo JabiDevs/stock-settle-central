@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -20,7 +21,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import { Search, Eye, Calendar } from "lucide-react"
+import { Search, Eye, Calendar, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
 import { Settlement } from "@/data/mockData"
 
 interface SettlementsTableProps {
@@ -42,6 +43,25 @@ const getStatusVariant = (status: string) => {
       return 'outline'
     default:
       return 'outline'
+  }
+}
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'Paid':
+      return 'hsl(var(--status-paid))'
+    case 'Created':
+      return 'hsl(var(--status-created))'
+    case 'SentToPay':
+      return 'hsl(var(--status-senttopay))'
+    case 'SentToCreate':
+      return 'hsl(var(--status-senttocreate))'
+    case 'NotAccepted':
+      return 'hsl(var(--status-notaccepted))'
+    case 'Initiated':
+      return 'hsl(var(--status-initiated))'
+    default:
+      return 'hsl(var(--muted))'
   }
 }
 
@@ -77,14 +97,50 @@ const formatDate = (dateString: string) => {
 
 const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps) => {
   const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
+  const [sortField, setSortField] = useState<keyof Settlement | null>(null)
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
-  const filteredSettlements = settlements.filter(settlement =>
-    settlement.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    settlement.ticker.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    settlement.brokerName.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredSettlements = useMemo(() => {
+    let filtered = settlements.filter(settlement => {
+      // Search filter
+      const searchMatch = settlement.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        settlement.ticker.toLowerCase().includes(searchTerm.toLowerCase())
+      
+      // Status filter
+      const statusMatch = statusFilter === "all" || settlement.status === statusFilter
+      
+      // Date range filter
+      const settlementDate = new Date(settlement.date)
+      const startMatch = !startDate || settlementDate >= new Date(startDate)
+      const endMatch = !endDate || settlementDate <= new Date(endDate)
+      
+      return searchMatch && statusMatch && startMatch && endMatch
+    })
+
+    // Sorting
+    if (sortField) {
+      filtered.sort((a, b) => {
+        let aValue = a[sortField]
+        let bValue = b[sortField]
+        
+        if (typeof aValue === 'string') {
+          aValue = aValue.toLowerCase()
+          bValue = (bValue as string).toLowerCase()
+        }
+        
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+        return 0
+      })
+    }
+
+    return filtered
+  }, [settlements, searchTerm, statusFilter, startDate, endDate, sortField, sortDirection])
 
   const totalPages = Math.ceil(filteredSettlements.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -95,24 +151,74 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
     setCurrentPage(page)
   }
 
+  const handleSort = (field: keyof Settlement) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDirection('asc')
+    }
+  }
+
+  const getSortIcon = (field: keyof Settlement) => {
+    if (sortField !== field) return <ArrowUpDown className="h-4 w-4" />
+    return sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />
+  }
+
   return (
     <Card className="card-financial">
       <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col gap-4">
           <div>
             <CardTitle>Lista de Liquidações</CardTitle>
             <CardDescription>
               {filteredSettlements.length} liquidação(ões) encontrada(s)
             </CardDescription>
           </div>
-          <div className="flex items-center space-x-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar liquidações..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
-            />
+          
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex items-center space-x-2 flex-1">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por ID ou Ticker..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-sm"
+              />
+            </div>
+            
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Filtrar por status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="Paid">Paga</SelectItem>
+                <SelectItem value="SentToPay">Enviado p/ Pagamento</SelectItem>
+                <SelectItem value="Created">Criada</SelectItem>
+                <SelectItem value="SentToCreate">Enviado p/ Criação</SelectItem>
+                <SelectItem value="Initiated">Iniciada</SelectItem>
+                <SelectItem value="NotAccepted">Não Aceita</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <div className="flex gap-2">
+              <Input
+                type="date"
+                placeholder="Data inicial"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-40"
+              />
+              <Input
+                type="date"
+                placeholder="Data final"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-40"
+              />
+            </div>
           </div>
         </div>
       </CardHeader>
@@ -120,51 +226,102 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Data</TableHead>
-              <TableHead>Ticker</TableHead>
-              <TableHead>Valor</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead 
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort('id')}
+              >
+                <div className="flex items-center gap-2">
+                  ID
+                  {getSortIcon('id')}
+                </div>
+              </TableHead>
+              <TableHead 
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort('date')}
+              >
+                <div className="flex items-center gap-2">
+                  Data
+                  {getSortIcon('date')}
+                </div>
+              </TableHead>
+              <TableHead 
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort('ticker')}
+              >
+                <div className="flex items-center gap-2">
+                  Ticker
+                  {getSortIcon('ticker')}
+                </div>
+              </TableHead>
+              <TableHead 
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort('netAmount')}
+              >
+                <div className="flex items-center gap-2">
+                  Valor Pago
+                  {getSortIcon('netAmount')}
+                </div>
+              </TableHead>
+              <TableHead>Taxas</TableHead>
+              <TableHead 
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort('status')}
+              >
+                <div className="flex items-center gap-2">
+                  Status
+                  {getSortIcon('status')}
+                </div>
+              </TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentSettlements.map((settlement) => (
-              <TableRow key={settlement.id} className="hover:bg-muted/50">
-                <TableCell className="font-mono font-medium">
-                  {settlement.id}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    {formatDate(settlement.date)}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span className="font-mono font-bold text-primary">
-                    {settlement.ticker}
-                  </span>
-                </TableCell>
-                <TableCell className="font-mono">
-                  {formatCurrency(settlement.netAmount)}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={getStatusVariant(settlement.status)}>
-                    {getStatusLabel(settlement.status)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onViewDetails(settlement)}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    Detalhes
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {currentSettlements.map((settlement) => {
+              const totalFees = settlement.fees.reduce((sum, fee) => sum + fee.amount, 0)
+              
+              return (
+                <TableRow key={settlement.id} className="hover:bg-muted/50">
+                  <TableCell className="font-mono font-medium">
+                    {settlement.id}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      {formatDate(settlement.date)}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-mono font-bold text-primary">
+                      {settlement.ticker}
+                    </span>
+                  </TableCell>
+                  <TableCell className="font-mono">
+                    {formatCurrency(settlement.netAmount)}
+                  </TableCell>
+                  <TableCell className="font-mono text-green-600 dark:text-green-400">
+                    {formatCurrency(totalFees)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant={getStatusVariant(settlement.status)}
+                      style={{ backgroundColor: getStatusColor(settlement.status), color: 'white' }}
+                    >
+                      {getStatusLabel(settlement.status)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onViewDetails(settlement)}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      Detalhes
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
         

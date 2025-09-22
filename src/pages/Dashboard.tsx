@@ -206,7 +206,7 @@ const Dashboard = () => {
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-senttopay))' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.senttopay}</div>
+            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-senttopay))' }}>{stats.senttopay}</div>
             <p className="text-xs text-muted-foreground">envio pagamento</p>
           </CardContent>
         </Card>
@@ -217,7 +217,7 @@ const Dashboard = () => {
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--status-paid))' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.paid}</div>
+            <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-paid))' }}>{stats.paid}</div>
             <p className="text-xs text-muted-foreground">pagas</p>
           </CardContent>
         </Card>
@@ -301,9 +301,12 @@ const Dashboard = () => {
                     <span className="font-mono text-sm font-medium">{settlement.id}</span>
                     <Badge variant="destructive">Não Aceita</Badge>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div className="grid grid-cols-3 gap-2 mt-2">
                     <p className="text-sm text-muted-foreground">
                       {settlement.ticker} - {formatCurrency(settlement.amount)}
+                    </p>
+                    <p className="text-sm text-muted-foreground text-center">
+                      Criado: {new Date(settlement.date).toLocaleDateString('pt-BR')}
                     </p>
                     <p className="text-sm text-muted-foreground text-right">
                       {new Date(settlement.date).toLocaleDateString('pt-BR')}

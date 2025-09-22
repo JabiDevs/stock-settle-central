@@ -63,13 +63,13 @@
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* Status colors */
-    --status-initiated: 217 91% 60%; /* Blue */
-    --status-notaccepted: 0 84% 60%; /* Red */
-    --status-senttocreate: 25 95% 53%; /* Orange */
-    --status-created: 48 96% 53%; /* Yellow */
-    --status-senttopay: 258 90% 66%; /* Purple */
-    --status-paid: 142 76% 36%; /* Green */
+    /* Status colors - Pastel tones */
+    --status-initiated: 217 60% 80%; /* Pastel Blue */
+    --status-notaccepted: 0 60% 75%; /* Pastel Red */
+    --status-senttocreate: 25 60% 75%; /* Pastel Orange */
+    --status-created: 48 60% 75%; /* Pastel Yellow */
+    --status-senttopay: 258 60% 80%; /* Pastel Purple */
+    --status-paid: 142 50% 75%; /* Pastel Green */
 
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
@@ -134,13 +134,13 @@
     --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.4), 0 2px 4px -1px hsl(0 0% 0% / 0.3);
     --shadow-elevated: 0 10px 15px -3px hsl(0 0% 0% / 0.4), 0 4px 6px -2px hsl(0 0% 0% / 0.3);
 
-    /* Status colors */
-    --status-initiated: 217 91% 60%; /* Blue */
-    --status-notaccepted: 0 84% 60%; /* Red */
-    --status-senttocreate: 25 95% 53%; /* Orange */
-    --status-created: 48 96% 53%; /* Yellow */
-    --status-senttopay: 258 90% 66%; /* Purple */
-    --status-paid: 142 76% 36%; /* Green */
+    /* Status colors - Pastel tones */
+    --status-initiated: 217 60% 80%; /* Pastel Blue */
+    --status-notaccepted: 0 60% 75%; /* Pastel Red */
+    --status-senttocreate: 25 60% 75%; /* Pastel Orange */
+    --status-created: 48 60% 75%; /* Pastel Yellow */
+    --status-senttopay: 258 60% 80%; /* Pastel Purple */
+    --status-paid: 142 50% 75%; /* Pastel Green */
 
     /* Sidebar */
     --sidebar-background: 213 94% 4%;
