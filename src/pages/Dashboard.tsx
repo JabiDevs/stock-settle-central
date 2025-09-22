@@ -10,23 +10,15 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart"
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
-  Treemap,
+  ResponsiveContainer
 } from "recharts"
 import { TrendingUp, DollarSign, Calendar, AlertCircle, XCircle, ShieldX } from "lucide-react"
 import { mockSettlements, mockBlockedSettlements, Settlement } from "@/data/mockData"
 import SettlementModal from "@/components/SettlementModal"
-import TreemapContent from "@/components/TreemapContent"
+
 import { formatCurrency } from "@/lib/utils"
 import { getSettlementStats, getTickerData, getStatusDistribution } from "@/lib/settlementCalculations"
 
@@ -82,32 +74,7 @@ const Dashboard = () => {
         </p>
       </div>
 
-      {/* Stats Cards - Primeira Linha */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card className="card-financial">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium">Total de Liquidações</CardTitle>
-            <TrendingUp className="h-6 w-6 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold">{stats.total}</div>
-            <p className="text-sm text-muted-foreground mt-2">liquidações processadas</p>
-          </CardContent>
-        </Card>
-
-        <Card className="card-financial">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium">Volume Financeiro Total</CardTitle>
-            <DollarSign className="h-6 w-6 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold">{formatCurrency(stats.totalPaid)}</div>
-            <p className="text-sm text-muted-foreground mt-2">valor total pago</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Stats Cards - Segunda Linha - Status */}
+      {/* Stats Cards - Status */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card className="card-financial">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -178,41 +145,28 @@ const Dashboard = () => {
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Volume por Ticker */}
+        {/* Total de Liquidações */}
         <Card className="card-financial">
-          <CardHeader>
-            <CardTitle>Frequência de Liquidações por Ticker</CardTitle>
-            <CardDescription>
-              Tickers ordenados por frequência de liquidações
-            </CardDescription>
+          <CardHeader className="flex flex-col items-center space-y-2 pb-2">
+            <TrendingUp className="h-6 w-6 text-muted-foreground" />
+            <CardTitle className="text-lg font-medium text-center">Total de Liquidações</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <Treemap
-                  data={tickerData}
-                  dataKey="size"
-                  aspectRatio={4/3}
-                  stroke="#fff"
-                  content={<TreemapContent onCellClick={(payload) => {
-                    console.log('Ticker clicked:', payload?.name, 'Frequência:', payload?.size)
-                  }} />}
-                />
-              </ResponsiveContainer>
-            </ChartContainer>
+          <CardContent className="flex flex-col items-center justify-center min-h-[250px]">
+            <div className="text-7xl font-bold mb-4">{stats.total}</div>
+            <p className="text-sm text-muted-foreground">liquidações processadas</p>
           </CardContent>
         </Card>
 
         {/* Status Distribution */}
         <Card className="card-financial">
-          <CardHeader>
-            <CardTitle>Distribuição por Status</CardTitle>
-            <CardDescription>
+          <CardHeader className="flex flex-col items-center space-y-2 pb-2">
+            <CardTitle className="text-lg font-medium text-center">Distribuição por Status</CardTitle>
+            <CardDescription className="text-center">
               Proporção de liquidações por status atual
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px]">
+          <CardContent className="flex flex-col items-center justify-center">
+            <ChartContainer config={chartConfig} className="h-[300px] flex items-center justify-center">
               <PieChart>
                 <Pie
                   data={statusData}
