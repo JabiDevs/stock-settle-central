@@ -83,7 +83,6 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-notaccepted))' }}>{stats.notaccepted}</div>
-            <p className="text-xs text-muted-foreground">não aceitas</p>
           </CardContent>
         </Card>
 
@@ -94,7 +93,6 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-initiated))' }}>{stats.initiated}</div>
-            <p className="text-xs text-muted-foreground">iniciadas</p>
           </CardContent>
         </Card>
 
@@ -105,7 +103,6 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-senttocreate))' }}>{stats.senttocreate}</div>
-            <p className="text-xs text-muted-foreground">envio criação</p>
           </CardContent>
         </Card>
 
@@ -116,7 +113,6 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-created))' }}>{stats.created}</div>
-            <p className="text-xs text-muted-foreground">criadas</p>
           </CardContent>
         </Card>
 
@@ -127,7 +123,6 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-senttopay))' }}>{stats.senttopay}</div>
-            <p className="text-xs text-muted-foreground">envio pagamento</p>
           </CardContent>
         </Card>
 
@@ -138,7 +133,6 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: 'hsl(var(--status-paid))' }}>{stats.paid}</div>
-            <p className="text-xs text-muted-foreground">pagas</p>
           </CardContent>
         </Card>
       </div>
@@ -148,11 +142,10 @@ const Dashboard = () => {
         {/* Total de Liquidações */}
         <Card className="card-financial">
           <CardHeader className="flex flex-col items-center space-y-2 pb-2">
-            <TrendingUp className="h-6 w-6 text-muted-foreground" />
             <CardTitle className="text-lg font-medium text-center">Total de Liquidações</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center min-h-[250px]">
-            <div className="text-7xl font-bold mb-4">{stats.total}</div>
+            <div className="text-9xl font-bold mb-4">{stats.total}</div>
             <p className="text-sm text-muted-foreground">liquidações processadas</p>
           </CardContent>
         </Card>
@@ -176,6 +169,7 @@ const Dashboard = () => {
                   label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                   outerRadius={80}
                   dataKey="value"
+                  style={{ fontWeight: 'bold', fontSize: '12px' }}
                 >
                   {statusData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -184,7 +178,7 @@ const Dashboard = () => {
                 <ChartTooltip 
                   content={<ChartTooltipContent 
                     formatter={(value: any, name: any) => [
-                      `${value} liquidações`,
+                      `${value} liquidações `,
                       name
                     ]}
                   />}

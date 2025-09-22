@@ -100,7 +100,7 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
   const [statusFilter, setStatusFilter] = useState("all")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
-  const [sortField, setSortField] = useState<keyof Settlement | null>(null)
+  const [sortField, setSortField] = useState<keyof Settlement | 'fees' | null>(null)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
@@ -110,29 +110,38 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
       // Search filter
       const searchMatch = settlement.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         settlement.ticker.toLowerCase().includes(searchTerm.toLowerCase())
-      
+
       // Status filter
       const statusMatch = statusFilter === "all" || settlement.status === statusFilter
-      
+
       // Date range filter
       const settlementDate = new Date(settlement.date)
       const startMatch = !startDate || settlementDate >= new Date(startDate)
       const endMatch = !endDate || settlementDate <= new Date(endDate)
-      
+
       return searchMatch && statusMatch && startMatch && endMatch
     })
 
     // Sorting
     if (sortField) {
       filtered.sort((a, b) => {
-        let aValue = a[sortField]
-        let bValue = b[sortField]
-        
-        if (typeof aValue === 'string') {
-          aValue = aValue.toLowerCase()
-          bValue = (bValue as string).toLowerCase()
+        let aValue: any
+        let bValue: any
+
+        // Special handling for fees
+        if (sortField === 'fees') {
+          aValue = a.fees.reduce((sum, fee) => sum + fee.amount, 0)
+          bValue = b.fees.reduce((sum, fee) => sum + fee.amount, 0)
+        } else {
+          aValue = a[sortField]
+          bValue = b[sortField]
+
+          if (typeof aValue === 'string') {
+            aValue = aValue.toLowerCase()
+            bValue = (bValue as string).toLowerCase()
+          }
         }
-        
+
         if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
         if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
         return 0
@@ -151,7 +160,7 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
     setCurrentPage(page)
   }
 
-  const handleSort = (field: keyof Settlement) => {
+  const handleSort = (field: keyof Settlement | 'fees') => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
     } else {
@@ -175,7 +184,7 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
               {filteredSettlements.length} liquidação(ões) encontrada(s)
             </CardDescription>
           </div>
-          
+
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex items-center space-x-2 flex-1">
@@ -187,7 +196,7 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
                 className="max-w-sm"
               />
             </div>
-            
+
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Filtrar por status" />
@@ -202,7 +211,7 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
                 <SelectItem value="NotAccepted">Não Aceita</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <div className="flex gap-2">
               <Input
                 type="date"
@@ -226,7 +235,7 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:bg-muted/50"
                 onClick={() => handleSort('id')}
               >
@@ -235,7 +244,7 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
                   {getSortIcon('id')}
                 </div>
               </TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:bg-muted/50"
                 onClick={() => handleSort('date')}
               >
@@ -244,16 +253,14 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
                   {getSortIcon('date')}
                 </div>
               </TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:bg-muted/50"
-                onClick={() => handleSort('ticker')}
               >
                 <div className="flex items-center gap-2">
                   Ticker
-                  {getSortIcon('ticker')}
                 </div>
               </TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:bg-muted/50"
                 onClick={() => handleSort('netAmount')}
               >
@@ -262,14 +269,18 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
                   {getSortIcon('netAmount')}
                 </div>
               </TableHead>
-              <TableHead>Taxas</TableHead>
-              <TableHead 
+              <TableHead className="cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort('fees')}>
+                <div className="flex items-center gap-2">
+                  Taxas
+                  {getSortIcon('fees')}
+                </div>
+              </TableHead>
+              <TableHead
                 className="cursor-pointer hover:bg-muted/50"
-                onClick={() => handleSort('status')}
               >
                 <div className="flex items-center gap-2">
                   Status
-                  {getSortIcon('status')}
                 </div>
               </TableHead>
               <TableHead className="text-right">Ações</TableHead>
@@ -278,7 +289,7 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
           <TableBody>
             {currentSettlements.map((settlement) => {
               const totalFees = settlement.fees.reduce((sum, fee) => sum + fee.amount, 0)
-              
+
               return (
                 <TableRow key={settlement.id} className="hover:bg-muted/50">
                   <TableCell className="font-mono font-medium">
@@ -302,7 +313,7 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
                     {formatCurrency(totalFees)}
                   </TableCell>
                   <TableCell>
-                    <Badge 
+                    <Badge
                       variant={getStatusVariant(settlement.status)}
                       style={{ backgroundColor: getStatusColor(settlement.status), color: 'white' }}
                     >
@@ -324,18 +335,18 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
             })}
           </TableBody>
         </Table>
-        
+
         {totalPages > 1 && (
           <div className="mt-4 flex justify-center">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious 
+                  <PaginationPrevious
                     onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                     className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
                   />
                 </PaginationItem>
-                
+
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   const page = i + 1
                   return (
@@ -350,15 +361,15 @@ const SettlementsTable = ({ settlements, onViewDetails }: SettlementsTableProps)
                     </PaginationItem>
                   )
                 })}
-                
+
                 {totalPages > 5 && (
                   <PaginationItem>
                     <PaginationEllipsis />
                   </PaginationItem>
                 )}
-                
+
                 <PaginationItem>
-                  <PaginationNext 
+                  <PaginationNext
                     onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                     className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
                   />
