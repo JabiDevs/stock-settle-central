@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { mockSettlements, mockAdminSettings } from "@/data/mockData"
+import { getSettlementStats } from "@/lib/settlementCalculations"
 import { Calculator, TrendingUp, Receipt, Filter } from "lucide-react"
 
 const formatCurrency = (amount: number) => {
@@ -44,15 +45,9 @@ export default function Financial() {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
-  // Filtrar apenas liquidações processadas (excluir NotAccepted)
-  const processedSettlements = mockSettlements.filter(s => s.status !== 'NotAccepted')
-  
-  // Cálculos de totais
-  const paidSettlements = processedSettlements.filter(s => s.status === 'Paid')
-  const totalPaid = paidSettlements.reduce((sum, s) => sum + s.netAmount, 0)
-  const totalFeesReceived = paidSettlements.reduce((sum, s) => 
-    sum + s.fees.reduce((feeSum, fee) => feeSum + fee.amount, 0), 0
-  )
+  // Use shared calculations for consistency
+  const stats = getSettlementStats()
+  const { processedSettlements, paidSettlements, totalPaid, totalFeesReceived } = stats
 
   // Resumo das taxas por tipo (apenas liquidações pagas)
   const feesSummary = paidSettlements.reduce((acc, settlement) => {

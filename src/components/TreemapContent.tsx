@@ -65,7 +65,7 @@ const TreemapContent: React.FC<TreemapContentProps> = ({
               fill="white"
               fontSize={10}
             >
-              {formatCurrency(payload?.size || 0)}
+              {payload?.size} liquidações
             </text>
           </>
         )}

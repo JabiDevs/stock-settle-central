@@ -28,62 +28,15 @@ import { mockSettlements, mockBlockedSettlements, Settlement } from "@/data/mock
 import SettlementModal from "@/components/SettlementModal"
 import TreemapContent from "@/components/TreemapContent"
 import { formatCurrency } from "@/lib/utils"
+import { getSettlementStats, getTickerData, getStatusDistribution } from "@/lib/settlementCalculations"
 
 const Dashboard = () => {
   const [selectedSettlement, setSelectedSettlement] = useState<Settlement | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const allSettlements = [...mockSettlements, ...mockBlockedSettlements]
-  
-  const stats = {
-    total: mockSettlements.length,
-    initiated: mockSettlements.filter(s => s.status === 'Initiated').length,
-    notaccepted: mockSettlements.filter(s => s.status === 'NotAccepted').length,
-    senttocreate: mockSettlements.filter(s => s.status === 'SentToCreate').length,
-    created: mockSettlements.filter(s => s.status === 'Created').length,
-    senttopay: mockSettlements.filter(s => s.status === 'SentToPay').length,
-    paid: mockSettlements.filter(s => s.status === 'Paid').length,
-    totalAmount: mockSettlements.reduce((sum, s) => sum + s.netAmount, 0),
-    blockedByLimit: mockBlockedSettlements.filter(s => 
-      s.history.some(h => h.description.includes('limite'))
-    ).length,
-    blockedByTicker: mockBlockedSettlements.filter(s => 
-      s.history.some(h => h.description.includes('proibidos'))
-    ).length
-  }
-
-  // Dados para gráfico treemap por ticker
-  const tickerVolumeMap = new Map<string, { volume: number, settlements: Settlement[] }>()
-  
-  mockSettlements.forEach(settlement => {
-    if (tickerVolumeMap.has(settlement.ticker)) {
-      const existing = tickerVolumeMap.get(settlement.ticker)!
-      existing.volume += settlement.netAmount
-      existing.settlements.push(settlement)
-    } else {
-      tickerVolumeMap.set(settlement.ticker, {
-        volume: settlement.netAmount,
-        settlements: [settlement]
-      })
-    }
-  })
-
-  const volumeByTicker = Array.from(tickerVolumeMap.entries()).map(([ticker, data]) => ({
-    name: ticker,
-    size: data.volume,
-    settlements: data.settlements,
-    fill: `hsl(var(--primary))`
-  }))
-
-  // Dados para gráfico de pizza por status
-  const statusData = [
-    { name: 'Pagas', value: stats.paid, color: 'hsl(var(--status-paid))' },
-    { name: 'Criadas', value: stats.created, color: 'hsl(var(--status-created))' },
-    { name: 'Enviado para Criar', value: stats.senttocreate, color: 'hsl(var(--status-senttocreate))' },
-    { name: 'Envio Pagamento', value: stats.senttopay, color: 'hsl(var(--status-senttopay))' },
-    { name: 'Não Aceitas', value: stats.notaccepted, color: 'hsl(var(--status-notaccepted))' },
-    { name: 'Iniciadas', value: stats.initiated, color: 'hsl(var(--status-initiated))' }
-  ]
+  const stats = getSettlementStats()
+  const tickerData = getTickerData()
+  const statusData = getStatusDistribution()
 
   // Dados para gráfico de bloqueios
   const blockedData = [
@@ -148,8 +101,8 @@ const Dashboard = () => {
             <DollarSign className="h-6 w-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold">{formatCurrency(stats.totalAmount)}</div>
-            <p className="text-sm text-muted-foreground mt-2">valor líquido total</p>
+            <div className="text-4xl font-bold">{formatCurrency(stats.totalPaid)}</div>
+            <p className="text-sm text-muted-foreground mt-2">valor total pago</p>
           </CardContent>
         </Card>
       </div>
@@ -228,21 +181,21 @@ const Dashboard = () => {
         {/* Volume por Ticker */}
         <Card className="card-financial">
           <CardHeader>
-            <CardTitle>Volume Financeiro por Ticker</CardTitle>
+            <CardTitle>Frequência de Liquidações por Ticker</CardTitle>
             <CardDescription>
-              Clique nas células para ver detalhes dos tickers
+              Tickers ordenados por frequência de liquidações
             </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <Treemap
-                  data={volumeByTicker}
+                  data={tickerData}
                   dataKey="size"
                   aspectRatio={4/3}
                   stroke="#fff"
                   content={<TreemapContent onCellClick={(payload) => {
-                    console.log('Ticker clicked:', payload?.name, 'Volume:', payload?.size)
+                    console.log('Ticker clicked:', payload?.name, 'Frequência:', payload?.size)
                   }} />}
                 />
               </ResponsiveContainer>
@@ -295,7 +248,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {mockBlockedSettlements.map((settlement) => (
+              {stats.allSettlements.filter(s => s.status === 'NotAccepted').map((settlement) => (
                 <div key={settlement.id} className="p-3 border rounded-lg">
                   <div className="flex justify-between items-center">
                     <span className="font-mono text-sm font-medium">{settlement.id}</span>
