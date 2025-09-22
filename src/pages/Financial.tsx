@@ -48,17 +48,14 @@ export default function Financial() {
   const processedSettlements = mockSettlements.filter(s => s.status !== 'NotAccepted')
   
   // Cálculos de totais
-  const totalGrossAmount = processedSettlements.reduce((sum, s) => sum + s.grossAmount, 0)
-  const totalFeesReceived = processedSettlements.reduce((sum, s) => 
+  const paidSettlements = processedSettlements.filter(s => s.status === 'Paid')
+  const totalPaid = paidSettlements.reduce((sum, s) => sum + s.netAmount, 0)
+  const totalFeesReceived = paidSettlements.reduce((sum, s) => 
     sum + s.fees.reduce((feeSum, fee) => feeSum + fee.amount, 0), 0
   )
 
-  // Volume financeiro pago = total líquido dos pagamentos realizados
-  const paidSettlements = processedSettlements.filter(s => s.status === 'Paid')
-  const financialVolumePaid = paidSettlements.reduce((sum, s) => sum + s.netAmount, 0)
-
-  // Resumo das taxas por tipo (sem contagem)
-  const feesSummary = processedSettlements.reduce((acc, settlement) => {
+  // Resumo das taxas por tipo (apenas liquidações pagas)
+  const feesSummary = paidSettlements.reduce((acc, settlement) => {
     settlement.fees.forEach(fee => {
       if (!acc[fee.name]) {
         acc[fee.name] = 0
@@ -99,7 +96,7 @@ export default function Financial() {
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total de Taxas Recebidas</CardTitle>
@@ -107,55 +104,22 @@ export default function Financial() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-700">{formatCurrency(totalFeesReceived)}</div>
-            <p className="text-xs text-green-600">Receita com taxas aplicadas</p>
+            <p className="text-xs text-green-600">Receita com taxas de liquidações pagas</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Volume Financeiro Pago</CardTitle>
+            <CardTitle className="text-sm font-medium">Total pago</CardTitle>
             <TrendingUp className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-700">{formatCurrency(financialVolumePaid)}</div>
-            <p className="text-xs text-blue-600">{paidSettlements.length} pagamentos realizados</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Bruto de Liquidações</CardTitle>
-            <Calculator className="h-4 w-4 text-purple-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-700">{formatCurrency(totalGrossAmount)}</div>
-            <p className="text-xs text-purple-600">{processedSettlements.length} liquidações processadas</p>
+            <div className="text-2xl font-bold text-blue-700">{formatCurrency(totalPaid)}</div>
+            <p className="text-xs text-blue-600">{paidSettlements.length} liquidações pagas</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Somatória destacada */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span>Total Bruto de Liquidações:</span>
-                <span className="font-mono">{formatCurrency(totalGrossAmount)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Total de Taxas Recebidas:</span>
-                <span className="font-mono text-green-600">+ {formatCurrency(totalFeesReceived)}</span>
-              </div>
-              <Separator />
-              <div className="flex justify-between font-semibold text-lg">
-                <span>Total de Volume Financeiro Pago:</span>
-                <span className="font-mono text-blue-600">{formatCurrency(financialVolumePaid)}</span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Resumo das Taxas */}
       <Card>
