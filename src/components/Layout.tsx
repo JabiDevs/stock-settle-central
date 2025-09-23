@@ -19,20 +19,11 @@ const Layout = ({ children }: LayoutProps) => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-foreground hover:bg-sidebar-accent p-2 md:hidden"
-                aria-label="Abrir menu lateral"
-              >
-                <PanelLeftOpen className="h-5 w-5" />
-              </Button>
-            </SidebarTrigger>
-            <SidebarTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-foreground hover:bg-sidebar-accent p-2 hidden md:flex"
+                className="text-foreground hover:bg-sidebar-accent p-2"
                 aria-label="Alternar menu lateral"
               >
-                <Menu className="h-4 w-4" />
+                <PanelLeftOpen className="h-5 w-5 md:hidden" />
+                <Menu className="h-4 w-4 hidden md:block" />
               </Button>
             </SidebarTrigger>
             <div className="ml-4">
