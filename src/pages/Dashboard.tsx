@@ -168,7 +168,7 @@ const Dashboard = () => {
                     cy="50%"
                     labelLine={false}
                     label={false}
-                    outerRadius="70%"
+                    outerRadius="60%"
                     dataKey="value"
                   >
                     {statusData.map((entry, index) => (
@@ -184,11 +184,19 @@ const Dashboard = () => {
                     />}
                   />
                   <ChartLegend 
-                    content={<ChartLegendContent />}
-                    wrapperStyle={{
-                      fontSize: '12px',
-                      paddingTop: '10px'
-                    }}
+                    content={({ payload }) => (
+                      <div className="flex flex-wrap justify-center gap-2 mt-2">
+                        {payload?.map((entry, index) => (
+                          <div key={index} className="flex items-center gap-1 text-xs">
+                            <div 
+                              className="w-3 h-3 rounded-full" 
+                              style={{ backgroundColor: entry.color }}
+                            />
+                            <span>{entry.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   />
                 </PieChart>
               </ResponsiveContainer>
