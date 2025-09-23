@@ -1,8 +1,6 @@
 import { ReactNode } from "react"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
-import { PanelLeftOpen, Menu } from "lucide-react"
-import { Button } from "@/components/ui/button"
 
 interface LayoutProps {
   children: ReactNode
@@ -15,17 +13,7 @@ const Layout = ({ children }: LayoutProps) => {
         <AppSidebar />
         <div className="flex-1 flex flex-col">
           <header className="h-14 flex items-center border-b border-border bg-card px-4">
-            <SidebarTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-foreground hover:bg-sidebar-accent p-2"
-                aria-label="Alternar menu lateral"
-              >
-                <PanelLeftOpen className="h-5 w-5 md:hidden" />
-                <Menu className="h-4 w-4 hidden md:block" />
-              </Button>
-            </SidebarTrigger>
+            <SidebarTrigger className="text-foreground" />
             <div className="ml-4">
               <h1 className="font-semibold text-foreground">Central de Liquidações</h1>
             </div>
