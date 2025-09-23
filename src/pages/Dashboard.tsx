@@ -158,32 +158,40 @@ const Dashboard = () => {
               Proporção de liquidações por status atual
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center">
-            <ChartContainer config={chartConfig} className="h-[300px] flex items-center justify-center">
-              <PieChart>
-                <Pie
-                  data={statusData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  dataKey="value"
-                  style={{ fontWeight: 'bold', fontSize: '12px' }}
-                >
-                  {statusData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <ChartTooltip 
-                  content={<ChartTooltipContent 
-                    formatter={(value: any, name: any) => [
-                      `${value} liquidações `,
-                      name
-                    ]}
-                  />}
-                />
-              </PieChart>
+          <CardContent className="flex flex-col items-center justify-center p-2 sm:p-6">
+            <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px] w-full flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={statusData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={false}
+                    outerRadius="70%"
+                    dataKey="value"
+                  >
+                    {statusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip 
+                    content={<ChartTooltipContent 
+                      formatter={(value: any, name: any) => [
+                        `${value} liquidações (${((value / stats.total) * 100).toFixed(1)}%)`,
+                        name
+                      ]}
+                    />}
+                  />
+                  <ChartLegend 
+                    content={<ChartLegendContent />}
+                    wrapperStyle={{
+                      fontSize: '12px',
+                      paddingTop: '10px'
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
         </Card>
